@@ -68,4 +68,6 @@ Twenty synthetic checks run on macOS without network requests or Keychain access
 
 A focused check reproduced loss of newer text when an earlier asynchronous save succeeded. The updated source snapshots the submitted note/project, clears only unchanged values, and explains when a newer draft is kept. Compose fields and interactive dismissal are disabled during a request. A second fixture reproduced refresh replacing an unconfirmed-save warning; that warning now survives both failed and successful reads until a confirmed save or session/journal reset. All twenty model checks and unsigned iOS Simulator SDK compilation passed. These changes have **not** been uploaded or installed through TestFlight; the physical results above belong to build 1.
 
+Updated source `ade8045` subsequently passed Simulator-signed install, native sign-in, owner save and full termination/relaunch. A separate owner API confirmed the new tagged note; the reopened native app retrieved it without another sign-in. Fault injection and updated physical acceptance remain open. The generated project now prepares version **0.1.0, build 2**; that version change is preparation, not an Apple upload receipt.
+
 License: AGPL-3.0-or-later, matching the existing Journal source. See LICENSE.

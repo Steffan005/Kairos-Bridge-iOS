@@ -101,4 +101,14 @@ A deterministic fixture changed draft/project during a save. The original source
 
 A second fixture reproduced refresh erasing the earlier unconfirmed-save warning. The model now retains that warning across failed and successful reads; a read is not a write receipt. A confirmed save or session/journal reset clears it. Twenty synthetic model checks and unsigned iOS Simulator SDK compilation passed for the combined source changes. The generic message in the phone report could have come from the foreground refresh; its exact cause was not captured, so this is a reproduced model defect and source repair, not a proven diagnosis of that phone event. Lost-response-after-commit and updated physical-build acceptance remain open.
 
+### Updated source native Simulator save/relaunch
+
+Source `ade80450212ca627454f1231c75b9a581117ff13` compiled with ad hoc Simulator signing, installed and launched in iPhone 17 / iOS 26.0 through Apple Device Hub. Native sign-in and retrieval used the existing separate disposable Simulator account.
+
+The operator entered the amber-notebook note with Project `kitchen`. Independent owner API returned HTTP 200 and exact entry `d17dfa1f4a33df39`, actor `you`, `2026-10-11T23:28:14.848Z`, tag `project-kitchen`. This separate account has four notes and zero AI approvals; the physical phone account has nine notes.
+
+The app was fully terminated and launched as a new process. Native accessibility state showed the signed-in journal, exact amber note, actor/date/project and a newly refreshed timestamp without password entry. This passes the normal updated-source native sign-in/save/relaunch slice. Computer use could not target the multiline editor, so the operator entered that note; this limitation does not establish an app defect. Temporary keyboard capture was restored to off.
+
+The generated project now increments the next candidate to 0.1.0 build 2. No second TestFlight upload or installation is established by this preparation. Updated-source fault tests, physical install and independent onboarding remain open. A read-only Grok review was requested at the exact source revision before upload.
+
 These results supersede the signing, physical-installation and actual-provider-pending statements in the earlier Simulator section. They do not establish physical failure handling, complete owner-control acceptance, customer onboarding, iPad behavior or other provider support.
