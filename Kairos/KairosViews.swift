@@ -112,10 +112,11 @@ struct ComposeView: View {
                     TextField("Write something to remember", text: $model.draft, axis: .vertical)
                         .lineLimit(6...12)
                         .focused($editingNote)
+                        .disabled(model.busy)
                         .accessibilityLabel("A note for next time")
                         .accessibilityIdentifier("note-draft")
                 }
-                Section("Project (optional)") { TextField("For example: kitchen", text: $model.project).textInputAutocapitalization(.never).autocorrectionDisabled() }
+                Section("Project (optional)") { TextField("For example: kitchen", text: $model.project).textInputAutocapitalization(.never).autocorrectionDisabled().disabled(model.busy) }
                 if let message = model.message { Section { Text(message) } }
                 Section {
                     Button("Save note") { Task { if await model.save() { dismiss() } } }
@@ -124,6 +125,7 @@ struct ComposeView: View {
                     Text("If a save can't be confirmed, check your journal before trying again. Kairos doesn't automatically retry a note.").font(.footnote).foregroundStyle(.secondary)
                 }
             }.navigationTitle("Remember something")
+                .interactiveDismissDisabled(model.busy)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) { Button("Keep draft") { dismiss() }.disabled(model.busy) }
                     ToolbarItemGroup(placement: .keyboard) {

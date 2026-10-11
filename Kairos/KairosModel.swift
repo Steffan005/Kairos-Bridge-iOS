@@ -49,19 +49,30 @@ final class KairosModel: ObservableObject {
 
     func save() async -> Bool {
         guard !busy else { return false }
-        let slug = project.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let submittedDraft = draft
+        let submittedProject = project
+        let slug = submittedProject.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard slug.isEmpty || slug.range(of: "^[a-z0-9]+(?:-[a-z0-9]+)*$", options: .regularExpression) != nil else {
             message = "Use a short project name with letters, numbers or hyphens."; return false
         }
         busy = true; defer { busy = false }
         do {
-            try await api.saveNote(text: draft, project: slug)
-            draft = ""; project = ""
+            try await api.saveNote(text: submittedDraft, project: slug)
+            // A write receipt acknowledges only the submitted snapshot. Never
+            // discard text that changed while the asynchronous save was running.
+            let newerDraft = draft != submittedDraft || project != submittedProject
+            if !newerDraft { draft = ""; project = "" }
             // A successful write receipt remains a success if the following read fails.
-            do { try await fetch(); message = "Saved to your journal." }
+            do {
+                try await fetch()
+                message = newerDraft ? "Your note saved. Your newer draft is kept." : "Saved to your journal."
+            }
             catch {
                 handle(error)
                 message = signedIn ? "Your note saved. The journal couldn't refresh; try Refresh to see it." : "Your note saved. Sign in again to refresh your journal."
+                if signedIn && newerDraft {
+                    message = "Your note saved. Your newer draft is kept. The journal couldn't refresh; try Refresh to see the saved note."
+                }
             }
             return true
         } catch {

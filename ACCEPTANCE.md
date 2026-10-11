@@ -85,6 +85,16 @@ These results complete the first TestFlight native/provider/re-entry gate. They 
 - After a repeated native Disconnect with no further reauthorization, the existing owner session's independent API read returned HTTP 200, **eight notes and zero approved connections** at `2026-10-11T22:45:39.987516Z`. No new grant was created to perform this check.
 - Private sign-in details were separated from historical test instructions. No credentials or exports are included in this repository.
 
-This completes native Sign out/Disconnect on one invited account. The Claude reconnect prompt is operator-reported; a raw provider HTTP refusal was not captured. Completed export delivery, failure handling, customer signup/recovery, clean first-time setup and independent repetition remain open.
+This completes native Sign out/Disconnect on one invited account. The Claude reconnect prompt is operator-reported; a raw provider HTTP refusal was not captured. Further failure handling, customer signup/recovery, clean first-time setup and independent repetition remain open.
+
+### Passed physical export and connection recovery
+
+The operator used native Prepare journal export → Share export → Save to Files. The delivered JSON contained eight entries and exactly matched every complete record returned by the live owner API. Every entry hash and parent link was independently recomputed from genesis to the exported head. The service still showed zero approved AI connections. This proves the synthetic export was delivered intact; hashes do not prove factual truth or freshness by themselves.
+
+With Airplane Mode on and Wi-Fi off, the operator reported the native message: “Can't reach Kairos. Check your connection and try again. Previously displayed notes haven't been refreshed.” When connectivity returned, the app automatically refreshed. Retention of visible loaded notes was not yet explicitly confirmed. An offline save attempt, expired session and control-request failures remain separate acceptance cases.
+
+### Source draft repair after build 1
+
+A deterministic fixture changed draft/project during a save. The original source failed with “Successful save erased a newer unsent draft.” The repair snapshots the submitted values and clears them only if unchanged; it preserves and acknowledges a newer draft. Compose editing and interactive dismissal are disabled while busy. Eighteen synthetic model checks and unsigned iOS Simulator SDK compilation passed for this change. No new native runtime, physical installation or TestFlight upload is claimed for the repair. The tested physical app remains compiled `acc89ce65003e2f2d88da341025ac2e3df675d1a`, version 0.1.0 build 1.
 
 These results supersede the signing, physical-installation and actual-provider-pending statements in the earlier Simulator section. They do not establish physical failure handling, complete owner-control acceptance, customer onboarding, iPad behavior or other provider support.

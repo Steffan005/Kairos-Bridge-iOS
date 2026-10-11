@@ -13,6 +13,9 @@ private final class FixtureAPI: KairosServing {
     var deleteCalls = 0
     var createCalls = 0
     var signOutCleanupFailure = false
+    var duringSave: (() -> Void)?
+    var lastSavedText: String?
+    var lastSavedProject: String?
 
     let entry = JournalEntry(id: "synthetic-native-check", text: "Synthetic model fixture only.", actor: "you",
                              created_at: "2026-10-11T02:59:50.817Z", tags: ["project-kitchen"])
@@ -25,6 +28,8 @@ private final class FixtureAPI: KairosServing {
     }
     func saveNote(text: String, project: String) async throws {
         saveCalls += 1
+        lastSavedText = text; lastSavedProject = project
+        duringSave?()
         if saveFails { throw URLError(.timedOut) }
     }
     func disconnect() async throws { disconnectCalls += 1 }
@@ -60,6 +65,20 @@ struct ModelChecks {
         expect(await model.save() == true, "Successful write was relabeled failed by a later refresh error")
         expect(model.draft.isEmpty, "Confirmed write left a duplicate-prone draft")
         expect(model.message?.contains("note saved") == true, "Confirmed save wasn't distinguished from refresh")
+
+        api.fetchFails = false
+        model.draft = "Original note in flight"; model.project = "kitchen"
+        api.duringSave = {
+            model.draft = "Newer unsent draft"; model.project = "garden"
+        }
+        expect(await model.save() == true, "Confirmed write failed when a newer draft appeared")
+        expect(api.lastSavedText == "Original note in flight" && api.lastSavedProject == "kitchen",
+               "Save did not use the submitted note and project")
+        expect(model.draft == "Newer unsent draft" && model.project == "garden",
+               "Successful save erased a newer unsent draft")
+        expect(model.message?.contains("newer draft is kept") == true,
+               "Successful save did not explain retained newer draft")
+        api.duringSave = nil
 
         model.busy = true
         let count = api.saveCalls

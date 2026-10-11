@@ -2,7 +2,7 @@
 
 Native SwiftUI companion to the existing Kairos Journal service. Created by Steffan Douglas Haskins.
 
-Status: on October 11, 2026, signed archive, export, upload and processing passed for version 0.1.0, build 1. The operator installed Kairos-Bridge through Apple's TestFlight invitation and opened its journal. A new tagged native note was retrieved in a fresh actual Claude iPhone chat, which saved a reply. An independent owner API read confirmed both exact records; the operator confirmed the reply remained visible after native refresh/full close/reopen. Native Sign out preserved approved Claude access. Native Disconnect removed every approved connection while retaining all eight notes, independently confirmed through the owner API. See [ACCEPTANCE.md](ACCEPTANCE.md) for evidence and remaining gates. Physical export delivery and failure checks, clean onboarding, customer signup/recovery and retention remain unfinished.
+Status: on October 11, 2026, signed archive, export, upload and processing passed for version 0.1.0, build 1. The operator installed Kairos-Bridge through Apple's TestFlight invitation and opened its journal. A new tagged native note was retrieved in a fresh actual Claude iPhone chat, which saved a reply. An independent owner API read confirmed both exact records; the operator confirmed the reply remained visible after native refresh/full close/reopen. Native Sign out preserved approved Claude access. Native Disconnect removed every approved connection while retaining all eight notes, independently confirmed through the owner API. The actual native export reached Files and matched all eight records. Offline Refresh reported failure, then the app refreshed automatically when connectivity returned. See [ACCEPTANCE.md](ACCEPTANCE.md) for evidence and remaining gates. Other physical failure checks, clean onboarding, customer signup/recovery and retention remain unfinished.
 
 ## Scope
 
@@ -49,8 +49,8 @@ The included original beta icon is an opaque 1024-pixel PNG compiled through `As
 1. Repeat the remaining Simulator-only checks on a physical iPhone. Physical installation, sign-in, owner save and actual Claude retrieval/write have passed on the author's phone.
 2. Confirm secure-cookie handling and device-bound session persistence on that physical device.
 3. Repeat the passed TestFlight native/provider/reopen path with an independent tester. The original development-install owner note was untagged and found by keyword; the later TestFlight owner and Claude notes both carry project-kitchen.
-4. Observe loss of network, expired session and ambiguous save status; avoid inventing a successful fetch or silently duplicating a note.
-5. Complete physical export delivery to Files. Physical native Sign out and Disconnect have passed on the author's TestFlight install. Simulator export preparation/share-sheet passed separately. The delete warning was inspected and cancelled; final active deletion requires explicit operator confirmation.
+4. Complete expired-session and ambiguous-save checks; avoid inventing a successful fetch or silently duplicating a note. Physical offline Refresh/error and automatic recovery passed; loaded-note retention needs explicit operator confirmation.
+5. Repeat passed physical export, Sign out and Disconnect with an independent tester. All eight delivered export records matched the live owner API and their hashes/links recomputed correctly. The delete warning was inspected and cancelled; final active deletion requires explicit operator confirmation.
 6. Use a clean provider account and independent tester for guided setup.
 7. Complete physical TestFlight owner-control/failure checks before release automation or a wider pilot. Invitation/install and native/provider read-write/reopen have passed on one invited account with an existing approved connector.
 
@@ -62,6 +62,10 @@ The earlier hosted and synthetic SDK checks remain separate evidence. The physic
 python3 scripts/check_models.py
 ```
 
-Fourteen synthetic checks run on macOS without network requests or Keychain access. They cover preserving an uncertain draft, distinguishing a confirmed write from a failed refresh, rejecting a queued second save, clearing known revoked approval while preserving notes, hiding notes after acknowledged deletion, recreation and sign-out. These checks do not establish native cookie parsing, iOS SDK compilation or physical-device behavior.
+Eighteen synthetic checks run on macOS without network requests or Keychain access. They cover preserving an uncertain or newer draft, using the submitted note/project snapshot, distinguishing a confirmed write from a failed refresh, rejecting a queued second save, clearing known revoked approval while preserving notes, hiding notes after acknowledged deletion, recreation and sign-out. These checks do not establish native cookie parsing or physical-device behavior.
+
+### Source change after TestFlight build 1
+
+A focused check reproduced loss of newer text when an earlier asynchronous save succeeded. The updated source snapshots the submitted note/project, clears only unchanged values, and explains when a newer draft is kept. Compose fields and interactive dismissal are disabled during a request. All eighteen model checks and unsigned iOS Simulator SDK compilation passed. This change has **not** been uploaded or installed through TestFlight; the physical results above belong to build 1.
 
 License: AGPL-3.0-or-later, matching the existing Journal source. See LICENSE.
