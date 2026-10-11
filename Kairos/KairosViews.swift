@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 Steffan Douglas Haskins
 import SwiftUI
+import UIKit
 
 struct KairosRoot: View {
     @EnvironmentObject private var model: KairosModel
@@ -136,6 +137,7 @@ struct ComposeView: View {
 
 struct ConnectionsView: View {
     @EnvironmentObject private var model: KairosModel
+    @State private var copiedAddress = false
     var body: some View {
         Form {
             Section("Claude") {
@@ -149,6 +151,14 @@ struct ConnectionsView: View {
             Section("Already added?") {
                 Text("Use the existing connector with this address. Its name may still include test. Reconnect when Claude asks, then enable it in your new chat.")
                 Text(KairosAPI.origin.absoluteString + "/mcp").font(.footnote).textSelection(.enabled)
+            }
+            Section("If the setup form isn't filled in") {
+                Button("Copy connection address") {
+                    UIPasteboard.general.string = KairosAPI.origin.absoluteString + "/mcp"
+                    copiedAddress = true
+                }.accessibilityIdentifier("copy-connection-address")
+                if copiedAddress { Text("Address copied. Paste it into Claude's custom connector form.") }
+                Text("Name the connector Kairos. Choose Sign in now and Use Claude's published identity, then approve your journal access when Kairos asks.").font(.footnote)
             }
             Section {
                 Text("Approval doesn't mean the connector is enabled in the current chat. Claude receives the notes you ask it to retrieve.").font(.footnote)

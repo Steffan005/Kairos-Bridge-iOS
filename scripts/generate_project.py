@@ -19,15 +19,20 @@ for source in sources:
     objects.append(item("file-" + source.name, f'isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "{source.name}"; sourceTree = "<group>";'))
     objects.append(item("build-" + source.name, f'isa = PBXBuildFile; fileRef = {ident("file-" + source.name)};'))
 children = " ".join(ident("file-" + source.name) + "," for source in sources)
+children += " " + ident("file-assets") + ","
 builds = " ".join(ident("build-" + source.name) + "," for source in sources)
 objects += [
-    item("main", f'isa = PBXGroup; children = ({ident("sources-group")}, {ident("products")},); sourceTree = "<group>";'),
+    item("file-config", 'isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>";'),
+    item("config-group", f'isa = PBXGroup; children = ({ident("file-config")},); path = Config; sourceTree = "<group>";'),
+    item("file-assets", 'isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>";'),
+    item("build-assets", f'isa = PBXBuildFile; fileRef = {ident("file-assets")};'),
+    item("main", f'isa = PBXGroup; children = ({ident("sources-group")}, {ident("config-group")}, {ident("products")},); sourceTree = "<group>";'),
     item("sources-group", f'isa = PBXGroup; children = ({children}); path = Kairos; sourceTree = "<group>";'),
     item("products", f'isa = PBXGroup; children = ({ident("app")},); name = Products; sourceTree = "<group>";'),
     item("app", 'isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kairos.app; sourceTree = BUILT_PRODUCTS_DIR;'),
     item("source-phase", f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = ({builds}); runOnlyForDeploymentPostprocessing = 0;'),
     item("framework-phase", 'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;'),
-    item("resource-phase", 'isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;'),
+    item("resource-phase", f'isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = ({ident("build-assets")},); runOnlyForDeploymentPostprocessing = 0;'),
     item("project", f'''isa = PBXProject; attributes = {{ LastUpgradeCheck = 2700; TargetAttributes = {{ {ident("target")} = {{ CreatedOnToolsVersion = "27.0"; }}; }}; }};
             buildConfigurationList = {ident("project-configs")}; compatibilityVersion = "Xcode 14.0";
             developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base,);
@@ -44,10 +49,11 @@ for name, debug in [("Debug", True), ("Release", False)]:
             DEBUG_INFORMATION_FORMAT = {"dwarf" if debug else '"dwarf-with-dsym"'}; ENABLE_TESTABILITY = {"YES" if debug else "NO"};
             SWIFT_OPTIMIZATION_LEVEL = {"\"-Onone\"" if debug else '"-O"'};
             SWIFT_ACTIVE_COMPILATION_CONDITIONS = {"DEBUG" if debug else '""'}; }};'''))
-    objects.append(item("target-" + name, f'''isa = XCBuildConfiguration; name = {name}; buildSettings = {{
+    objects.append(item("target-" + name, f'''isa = XCBuildConfiguration; name = {name}; baseConfigurationReference = {ident("file-config")}; buildSettings = {{
             CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 0.1.0;
-            PRODUCT_BUNDLE_IDENTIFIER = com.steffanhaskins.kairos; PRODUCT_NAME = "$(TARGET_NAME)";
+            PRODUCT_NAME = "$(TARGET_NAME)";
             GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = Kairos;
+            ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
             INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO; INFOPLIST_KEY_UILaunchScreen_Generation = YES;
             INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
             INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

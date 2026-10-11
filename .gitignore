@@ -5,3 +5,4 @@ DerivedData/
 xcuserdata/
 private/
 .env*
+Config/Signing.local.xcconfig

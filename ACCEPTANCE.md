@@ -25,6 +25,8 @@ One disposable account on the existing invited HTTPS service was used. No person
 | Sign-out | Native sign-out returned directly to the sign-in screen. A new MCP client process still retrieved the approved journal; all three notes and one grant remained. |
 | Disconnect | The native confirmation was accepted. A separate request using the previously valid AI credential received HTTP 401; all three notes remained and approved connections became zero. |
 | Delete warning | The irreversible warning was displayed and cancelled. No native deletion was performed. |
+| Connection fallback | The native Copy connection address button displayed its acknowledgement on Simulator. Actual paste into a physical-phone provider setup remains open. |
+| Beta icon | Original opaque 1024 x 1024 artwork compiled through the asset catalog in Simulator and unsigned device builds. Kairos appeared on the Simulator home screen and reopened its journal. |
 
 The first sign-out attempt exposed a real navigation bug: the owner session ended but a pushed control screen remained visible. Resetting the navigation stack at the sign-in boundary corrected it; the rebuilt app passed the same sign-out path.
 
@@ -34,7 +36,7 @@ The first sign-out attempt exposed a real navigation bug: the owner session ende
 - A clean provider setup and independent tester for the guided connection path. Prior hosted Claude iPhone tests are separate evidence.
 - Native network loss, expired-session handling, ambiguous save outcomes and control-request failures. Existing synthetic model checks do not establish those runtime conditions.
 - Completed export delivery to Files and final deletion/recreation with explicit operator confirmation.
-- Registered bundle identifier, Developer team signing, icons, manual archive/upload and internal TestFlight install.
+- Registered bundle identifier, Developer team signing, manual archive/upload and internal TestFlight install. Original beta artwork is included; acceptance of the icon in an Apple upload is not yet established.
 - Customer signup, account recovery, complete account deletion and production retention/disclosure work.
 
 The provisional bundle ID remains `com.steffanhaskins.kairos`. The app consumes the existing invited staging origin. No customer credentials, invitation values, private exports, actual journals or Apple signing keys are included in this repository.

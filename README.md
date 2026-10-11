@@ -8,7 +8,7 @@ Status: the iOS SDK build and the first Simulator runtime checks passed on Octob
 
 - Native sign-in, journal, dated/attributed notes and compose controls.
 - Device-bound Keychain sessions; no password saved by the app; ephemeral HTTP transport, fixed HTTPS origin and refused redirects.
-- Guided Claude setup in the system browser. App, browser and Claude sessions are separate. Approval is not proof the connector is enabled in the current chat.
+- Guided Claude setup in the system browser, with a Copy connection address fallback. App, browser and Claude sessions are separate. Approval is not proof the connector is enabled in the current chat.
 - Owner export/share, explicit Disconnect, sign-out and confirmed active-journal deletion with the actual retention notice.
 - Visible stale/offline/error states. Drafts survive view dismissal in memory, not app termination. No automatic note retry or idempotent-write guarantee.
 
@@ -40,7 +40,9 @@ The runtime check used Xcode's ad hoc Simulator signature and generated applicat
 
 Open `Kairos.xcodeproj` in Xcode for the Simulator. Use only the disposable account provided privately by the operator. Credentials, invitation codes, exports and actual journals must not enter Git or public screenshots.
 
-`com.steffanhaskins.kairos` is a provisional development identifier, not a registered App Store identity. Select the correct signing team and settle the identifier before a device archive. Icons, signing, customer account deletion and store privacy disclosures are release work still ahead.
+`com.steffanhaskins.kairos` is a provisional development identifier, not a registered App Store identity. Select the correct signing team and settle the identifier before a device archive. Put local `DEVELOPMENT_TEAM` and any settled `PRODUCT_BUNDLE_IDENTIFIER` in the ignored `Config/Signing.local.xcconfig` so project regeneration preserves them. No team is configured in the public source. Developer signing, customer account deletion and store privacy disclosures remain ahead.
+
+The included original beta icon is an opaque 1024-pixel PNG compiled through `Assets.xcassets`. Regenerate its artwork with `swift scripts/generate_icon.swift` on macOS. The project generator includes the catalog and the signing configuration; normal users do not run these developer scripts.
 
 ## Acceptance still required
 
