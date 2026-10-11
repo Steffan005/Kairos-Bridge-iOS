@@ -1,4 +1,4 @@
-// Provisional beta identity; settle and register it before a physical-device archive.
+// Registered beta identity used by the signed physical-device build and distribution export.
 PRODUCT_BUNDLE_IDENTIFIER = com.steffanhaskins.kairos
 // Optional local team/identity settings survive project regeneration and stay outside Git.
 #include? "Signing.local.xcconfig"
