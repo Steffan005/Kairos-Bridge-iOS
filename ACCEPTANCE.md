@@ -36,7 +36,7 @@ The first sign-out attempt exposed a real navigation bug: the owner session ende
 - A clean provider setup and independent tester for the guided connection path. Prior hosted Claude iPhone tests are separate evidence.
 - Native network loss, expired-session handling, ambiguous save outcomes and control-request failures. Existing synthetic model checks do not establish those runtime conditions.
 - Completed export delivery to Files and final deletion/recreation with explicit operator confirmation.
-- Completed Apple processing, internal TestFlight invitation and installation. Bundle registration, Developer team signing, signed archive, App Store distribution export and upload passed; App Store review remains separate.
+- TestFlight read/write/reopen and physical owner-control checks. Invitation delivery and first TestFlight install/open are operator-confirmed; App Store review remains separate.
 - Customer signup, account recovery, complete account deletion and production retention/disclosure work.
 
 The registered bundle ID is `com.steffanhaskins.kairos`. The app consumes the existing invited staging origin. No customer credentials, invitation values, private exports, actual journals or Apple signing keys are included in this repository.
@@ -55,5 +55,17 @@ Compiled source: `acc89ce65003e2f2d88da341025ac2e3df675d1a`, version 0.1.0, buil
 ### Superseding upload receipt
 
 The operator created the matching app record with name **Kairos-Bridge**, after Apple rejected **Kairos** as already in use. The repeated Xcode upload returned exit 0 and `EXPORT SUCCEEDED`. Apple logged `Upload succeeded` at `2026-10-11T12:31:51Z` and reported the package processing. This clears the missing-record/upload gate above. Processing completion, internal group invitation and TestFlight installation remain unconfirmed. No App Store Connect API key was used, and no public App Store release was submitted.
+
+### Superseding processing and owner-group checkpoint
+
+On October 11 evening ET, the operator's TestFlight screenshot and a fresh browser DOM/accessibility read agreed on version **0.1.0**, build **1**, status **Ready to Submit**, with the compiled beta icon. Processing is complete. Apple's separate Distribution page has a draft App Store version 1.0; this is distinct from the uploaded beta version.
+
+The operator reports creating **Kairos Owner Pilot**, adding himself as an internal tester and adding the build. Browser tab metadata independently showed the created group URL, but its Builds/Testers panel was not captured. Computer-use mutation dispatch and native window controls failed during this workflow. The operator did not see a What to Test field; the prepared synthetic instructions are retained for build details. Invitation delivery, TestFlight installation and the return display in native Kairos remain open. No invitation credential is published here.
+
+### First TestFlight installation
+
+The operator subsequently reported receiving Apple's invitation in Gmail, opening its link, installing Kairos-Bridge through TestFlight and opening the app to **JOURNAL**. This completes the first owner invitation/install/open gate. The installation was reported from the physical phone; an install/version screenshot was not captured. No additional sign-in was reported.
+
+A new TestFlight owner save with project `kitchen`, fresh actual Claude read/write, native refresh and close/reopen has been requested. That pending check remains separate from the passed development-install round trip. No separate redemption code or invitation URL has been received by the builder, and none is stored in public source.
 
 These results supersede the signing, physical-installation and actual-provider-pending statements in the earlier Simulator section. They do not establish physical failure handling, complete owner-control acceptance, customer onboarding, iPad behavior or other provider support.

@@ -2,7 +2,7 @@
 
 Native SwiftUI companion to the existing Kairos Journal service. Created by Steffan Douglas Haskins.
 
-Status: on October 11, 2026, a signed build was installed and opened on a physical iPhone. A note saved in that native app was retrieved in a fresh actual Claude iPhone conversation, which wrote a reply into the same journal. A separate owner API read confirmed both exact records. Signed archive, App Store distribution export and Apple upload succeeded for version 0.1.0, build 1. Apple reported the package processing. The store record is Kairos-Bridge; TestFlight processing completion, invitation and installation remain unconfirmed. See [ACCEPTANCE.md](ACCEPTANCE.md) for the separate Simulator results and remaining gates. Customer signup, identity recovery and retention remain unfinished.
+Status: on October 11, 2026, the first native development install passed owner save and actual Claude iPhone read/write, with independent owner API confirmation. Signed archive, App Store distribution export, upload and processing then passed for version 0.1.0, build 1. The operator received Apple's invitation, installed Kairos-Bridge through TestFlight and opened its journal. This confirms the first owner TestFlight install/open; a new TestFlight read/write/reopen check is pending. See [ACCEPTANCE.md](ACCEPTANCE.md) for evidence and remaining gates. Customer signup, identity recovery and retention remain unfinished.
 
 ## Scope
 
@@ -52,7 +52,7 @@ The included original beta icon is an opaque 1024-pixel PNG compiled through `As
 4. Observe loss of network, expired session and ambiguous save status; avoid inventing a successful fetch or silently duplicating a note.
 5. Repeat export, sign-out and Disconnect on a physical device; complete export delivery to Files. Simulator export preparation/share-sheet and access-control checks passed. The delete warning was inspected and cancelled; final active deletion requires explicit operator confirmation.
 6. Use a clean provider account and independent tester for guided setup.
-7. Confirm Apple processing, invite the owner to an internal TestFlight group, and complete TestFlight installation before release automation. The upload receipt is not a TestFlight installation receipt.
+7. Complete the new TestFlight read/write/reopen and owner-control checks. Invitation delivery and the first TestFlight install/open are operator-confirmed. The earlier physical native read/write check used direct development installation.
 
 The earlier hosted and synthetic SDK checks remain separate evidence. The physical native/Claude read-write result now establishes this client path on one invited account, not clean customer onboarding or support for other providers.
 
