@@ -7,6 +7,7 @@ Actor: ChatGPT / gpt_codex. Scope: Kairos native iPhone client.
 - A real `Kairos.xcodeproj` target and shared `Kairos` scheme exist with six Swift sources.
 - All six sources passed the installed compiler's syntax parsing.
 - Foundation models, device Keychain storage and HTTP client passed macOS Command Line Tools type checking in Swift 5 mode.
+- Fourteen synthetic model checks passed on macOS. They made no network calls or Keychain accesses and do not prove the native transport.
 - `project.pbxproj` passed property-list parsing; the shared scheme passed XML parsing.
 - The existing hosted service's physical Claude iPhone retrieval after the guided update passed separately, with an independent owner read confirming the exact note and two retained entries.
 

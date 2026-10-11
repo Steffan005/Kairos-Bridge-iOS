@@ -42,4 +42,12 @@ Open `Kairos.xcodeproj` in Xcode for the Simulator. Use only the disposable acco
 
 The hosted provider round trip has already been tested separately. That does not establish acceptance of this native client.
 
+## Preliminary model checks
+
+```sh
+python3 scripts/check_models.py
+```
+
+Fourteen synthetic checks run on macOS without network requests or Keychain access. They cover preserving an uncertain draft, distinguishing a confirmed write from a failed refresh, rejecting a queued second save, clearing known revoked approval while preserving notes, hiding notes after acknowledged deletion, recreation and sign-out. These checks do not establish native cookie parsing, iOS SDK compilation or physical-device behavior.
+
 License: AGPL-3.0-or-later, matching the existing Journal source. See LICENSE.

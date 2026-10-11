@@ -13,7 +13,22 @@ private final class RefuseRedirects: NSObject, URLSessionTaskDelegate {
 }
 
 @MainActor
-final class KairosAPI {
+protocol KairosServing {
+    var email: String? { get }
+    func restoreSession() throws -> Bool
+    func forgetSession() throws
+    func signIn(email: String, password: String) async throws
+    func journal() async throws -> JournalEnvelope
+    func saveNote(text: String, project: String) async throws
+    func disconnect() async throws
+    func deleteJournal() async throws
+    func recreateJournal() async throws
+    func export() async throws -> Data
+    func signOut() async throws
+}
+
+@MainActor
+final class KairosAPI: KairosServing {
     static let origin = URL(string: "https://kairos-journal-staging.onrender.com")!
     private let vault = SessionVault()
     private var saved = SessionVault.Session(email: nil, cookies: [])
@@ -64,8 +79,18 @@ final class KairosAPI {
     func export() async throws -> Data { try await request("/api/journal/export") }
 
     func signOut() async throws {
-        _ = try await request("/api/auth/sign-out", method: "POST", body: [:])
-        try forgetSession()
+        do { _ = try await request("/api/auth/sign-out", method: "POST", body: [:]) }
+        catch KairosFailure.secureStorage {
+            // request only persists cookies after a successful HTTP response.
+            saved = .init(email: nil, cookies: [])
+            try? vault.clear()
+            throw KairosFailure.signedOutStorageCleanup
+        }
+        do { try forgetSession() }
+        catch {
+            saved = .init(email: nil, cookies: [])
+            throw KairosFailure.signedOutStorageCleanup
+        }
     }
 
     private func request(_ path: String, method: String = "GET", body: [String: Any]? = nil) async throws -> Data {

@@ -49,12 +49,14 @@ struct ServiceFailure: Decodable {
 enum KairosFailure: LocalizedError {
     case service(Int, String)
     case secureStorage
+    case signedOutStorageCleanup
     case invalidResponse
 
     var errorDescription: String? {
         switch self {
         case .service(_, let message): return message
         case .secureStorage: return "Kairos couldn't safely store your sign-in on this device. Please try again."
+        case .signedOutStorageCleanup: return "Signed out of Kairos. This device couldn't remove its old session record; that server session has ended."
         case .invalidResponse: return "Kairos couldn't read the service response. Please try again."
         }
     }

@@ -14,7 +14,9 @@ final class KairosModel: ObservableObject {
     @Published var draft = ""
     @Published var project = ""
     @Published var exportURL: URL?
-    let api = KairosAPI()
+    let api: any KairosServing
+
+    init(api: (any KairosServing)? = nil) { self.api = api ?? KairosAPI() }
 
     func restore() async {
         do {
@@ -25,6 +27,7 @@ final class KairosModel: ObservableObject {
     }
 
     func signIn(email: String, password: String) async -> Bool {
+        guard !busy else { return false }
         busy = true; defer { busy = false }
         do {
             try await api.signIn(email: email, password: password)
@@ -45,6 +48,7 @@ final class KairosModel: ObservableObject {
     }
 
     func save() async -> Bool {
+        guard !busy else { return false }
         let slug = project.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard slug.isEmpty || slug.range(of: "^[a-z0-9]+(?:-[a-z0-9]+)*$", options: .regularExpression) != nil else {
             message = "Use a short project name with letters, numbers or hyphens."; return false
@@ -53,7 +57,12 @@ final class KairosModel: ObservableObject {
         do {
             try await api.saveNote(text: draft, project: slug)
             draft = ""; project = ""
-            try await fetch(); message = "Saved to your journal."
+            // A successful write receipt remains a success if the following read fails.
+            do { try await fetch(); message = "Saved to your journal." }
+            catch {
+                handle(error)
+                message = signedIn ? "Your note saved. The journal couldn't refresh; try Refresh to see it." : "Your note saved. Sign in again to refresh your journal."
+            }
             return true
         } catch {
             handle(error)
@@ -67,9 +76,20 @@ final class KairosModel: ObservableObject {
         busy = true; defer { busy = false }
         do {
             switch action {
-            case "disconnect": try await api.disconnect(); try await fetch(); message = "All AI access disconnected. Your notes remain."
-            case "delete": try await api.deleteJournal(); try await fetch(); draft = ""; project = ""; message = "Active journal deleted."
-            case "create": try await api.recreateJournal(); try await fetch(); message = "New empty journal. Previous AI access remains disconnected."
+            case "disconnect":
+                try await api.disconnect()
+                if let current = journal { journal = .init(deleted: current.deleted, entries: current.entries, connections: [], count: current.count) }
+                message = "All AI access disconnected. Your notes remain."
+            case "delete":
+                try await api.deleteJournal()
+                journal = .init(deleted: true, entries: [], connections: [], count: 0)
+                loaded = true; lastFetched = nil; draft = ""; project = ""
+                message = "Active journal deleted."
+            case "create":
+                try await api.recreateJournal()
+                journal = .init(deleted: false, entries: [], connections: [], count: 0)
+                loaded = true; lastFetched = nil
+                message = "New empty journal. Previous AI access remains disconnected."
             case "signout": try await api.signOut(); clearDisplay(); message = "Signed out. Approved AI access remains until you disconnect it."
             case "export":
                 let data = try await api.export()
@@ -78,7 +98,10 @@ final class KairosModel: ObservableObject {
                 message = "Export prepared. Choose Share export to save or share your copy."
             default: break
             }
-        } catch { handle(error) }
+        } catch {
+            if case KairosFailure.signedOutStorageCleanup = error { clearDisplay() }
+            handle(error)
+        }
     }
 
     private func clearDisplay() {
