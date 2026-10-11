@@ -7,6 +7,7 @@ Actor: ChatGPT / gpt_codex. Scope: Kairos native iPhone client.
 - Apple Xcode 27.0 (27A266a), iOS Simulator SDK 27.0; runtime iPhone 17 Simulator on iOS 26.0.
 - Steffan accepted the separate Xcode and Apple SDKs Agreement himself.
 - The actual target compiled successfully against the iOS SDK. The Simulator runtime used ad hoc signing (`CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-`) with Xcode's generated application-identifier entitlement.
+- A separate unsigned `generic/platform=iOS` build also passed for the physical-device target. This establishes device-target compilation, not installation or device signing.
 - The initial unsigned app compiled but showed a secure-storage error. That error was absent after Simulator signing; native sign-in and session persistence then passed. No Apple Developer certificate, team provisioning or TestFlight signature is established by this result.
 - The earlier six-file syntax/type checks, project/scheme parsing and fourteen macOS synthetic model checks remain separate preliminary evidence.
 
