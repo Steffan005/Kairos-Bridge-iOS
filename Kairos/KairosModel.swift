@@ -14,6 +14,8 @@ final class KairosModel: ObservableObject {
     @Published var draft = ""
     @Published var project = ""
     @Published var exportURL: URL?
+    private var unconfirmedSave = false
+    private let unconfirmedSaveMessage = "We couldn't confirm whether an earlier note saved. Your draft is kept. Check your journal before saving again to avoid a duplicate."
     let api: any KairosServing
 
     init(api: (any KairosServing)? = nil) { self.api = api ?? KairosAPI() }
@@ -38,7 +40,9 @@ final class KairosModel: ObservableObject {
     }
 
     private func fetch() async throws {
-        journal = try await api.journal(); loaded = true; lastFetched = Date(); message = nil
+        journal = try await api.journal(); loaded = true; lastFetched = Date()
+        // A successful read is not a receipt for an earlier uncertain write.
+        message = unconfirmedSave ? unconfirmedSaveMessage : nil
     }
 
     func refresh() async {
@@ -58,6 +62,7 @@ final class KairosModel: ObservableObject {
         busy = true; defer { busy = false }
         do {
             try await api.saveNote(text: submittedDraft, project: slug)
+            unconfirmedSave = false
             // A write receipt acknowledges only the submitted snapshot. Never
             // discard text that changed while the asynchronous save was running.
             let newerDraft = draft != submittedDraft || project != submittedProject
@@ -76,8 +81,8 @@ final class KairosModel: ObservableObject {
             }
             return true
         } catch {
+            if error is URLError { unconfirmedSave = true }
             handle(error)
-            if error is URLError { message = "We couldn't confirm whether this note saved. Your draft is kept. Refresh your journal before trying again to avoid a duplicate." }
             return false
         }
     }
@@ -94,12 +99,12 @@ final class KairosModel: ObservableObject {
             case "delete":
                 try await api.deleteJournal()
                 journal = .init(deleted: true, entries: [], connections: [], count: 0)
-                loaded = true; lastFetched = nil; draft = ""; project = ""
+                loaded = true; lastFetched = nil; draft = ""; project = ""; unconfirmedSave = false
                 message = "Active journal deleted."
             case "create":
                 try await api.recreateJournal()
                 journal = .init(deleted: false, entries: [], connections: [], count: 0)
-                loaded = true; lastFetched = nil
+                loaded = true; lastFetched = nil; unconfirmedSave = false
                 message = "New empty journal. Previous AI access remains disconnected."
             case "signout": try await api.signOut(); clearDisplay(); message = "Signed out. Approved AI access remains until you disconnect it."
             case "export":
@@ -118,6 +123,7 @@ final class KairosModel: ObservableObject {
     private func clearDisplay() {
         signedIn = false; loaded = false; journal = nil; email = ""; lastFetched = nil
         draft = ""; project = ""; exportURL = nil
+        unconfirmedSave = false
     }
 
     private func handle(_ error: Error) {
@@ -125,6 +131,7 @@ final class KairosModel: ObservableObject {
             try? api.forgetSession(); clearDisplay()
         }
         message = error is URLError ? "Can't reach Kairos. Check your connection and try again. Previously displayed notes haven't been refreshed." : error.localizedDescription
+        if error is URLError && unconfirmedSave { message = unconfirmedSaveMessage }
     }
 
     var claudeURL: URL {

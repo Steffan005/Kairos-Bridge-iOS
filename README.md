@@ -49,7 +49,7 @@ The included original beta icon is an opaque 1024-pixel PNG compiled through `As
 1. Repeat the remaining Simulator-only checks on a physical iPhone. Physical installation, sign-in, owner save and actual Claude retrieval/write have passed on the author's phone.
 2. Confirm secure-cookie handling and device-bound session persistence on that physical device.
 3. Repeat the passed TestFlight native/provider/reopen path with an independent tester. The original development-install owner note was untagged and found by keyword; the later TestFlight owner and Claude notes both carry project-kitchen.
-4. Complete expired-session and ambiguous-save checks; avoid inventing a successful fetch or silently duplicating a note. Physical offline Refresh/error and automatic recovery passed; loaded-note retention needs explicit operator confirmation.
+4. Complete expired-session and lost-response-after-commit checks; avoid inventing a successful fetch or silently duplicating a note. Physical offline Refresh/error, visible loaded-note retention, draft retention and automatic online recovery passed. The operator manually saved after reconnecting; one resulting note was independently confirmed. The exact offline Save warning/dispatch was not captured.
 5. Repeat passed physical export, Sign out and Disconnect with an independent tester. All eight delivered export records matched the live owner API and their hashes/links recomputed correctly. The delete warning was inspected and cancelled; final active deletion requires explicit operator confirmation.
 6. Use a clean provider account and independent tester for guided setup.
 7. Complete physical TestFlight owner-control/failure checks before release automation or a wider pilot. Invitation/install and native/provider read-write/reopen have passed on one invited account with an existing approved connector.
@@ -62,10 +62,10 @@ The earlier hosted and synthetic SDK checks remain separate evidence. The physic
 python3 scripts/check_models.py
 ```
 
-Eighteen synthetic checks run on macOS without network requests or Keychain access. They cover preserving an uncertain or newer draft, using the submitted note/project snapshot, distinguishing a confirmed write from a failed refresh, rejecting a queued second save, clearing known revoked approval while preserving notes, hiding notes after acknowledged deletion, recreation and sign-out. These checks do not establish native cookie parsing or physical-device behavior.
+Twenty synthetic checks run on macOS without network requests or Keychain access. They cover preserving an uncertain or newer draft and warning, using the submitted note/project snapshot, distinguishing a confirmed write from a failed refresh, rejecting a queued second save, clearing known revoked approval while preserving notes, hiding notes after acknowledged deletion, recreation and sign-out. These checks do not establish native cookie parsing or physical-device behavior.
 
 ### Source change after TestFlight build 1
 
-A focused check reproduced loss of newer text when an earlier asynchronous save succeeded. The updated source snapshots the submitted note/project, clears only unchanged values, and explains when a newer draft is kept. Compose fields and interactive dismissal are disabled during a request. All eighteen model checks and unsigned iOS Simulator SDK compilation passed. This change has **not** been uploaded or installed through TestFlight; the physical results above belong to build 1.
+A focused check reproduced loss of newer text when an earlier asynchronous save succeeded. The updated source snapshots the submitted note/project, clears only unchanged values, and explains when a newer draft is kept. Compose fields and interactive dismissal are disabled during a request. A second fixture reproduced refresh replacing an unconfirmed-save warning; that warning now survives both failed and successful reads until a confirmed save or session/journal reset. All twenty model checks and unsigned iOS Simulator SDK compilation passed. These changes have **not** been uploaded or installed through TestFlight; the physical results above belong to build 1.
 
 License: AGPL-3.0-or-later, matching the existing Journal source. See LICENSE.

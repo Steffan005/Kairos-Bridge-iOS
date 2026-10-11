@@ -61,6 +61,15 @@ struct ModelChecks {
         expect(model.draft == "Draft to keep", "Unconfirmed save discarded draft")
         expect(model.message?.contains("couldn't confirm") == true, "Uncertain save didn't explain ambiguity")
 
+        api.fetchFails = true
+        await model.refresh()
+        expect(model.message?.contains("couldn't confirm") == true,
+               "Failed refresh hid the unconfirmed-save warning")
+        api.fetchFails = false
+        await model.refresh()
+        expect(model.message?.contains("couldn't confirm") == true,
+               "Successful refresh silently certified an unconfirmed write")
+
         api.saveFails = false; api.fetchFails = true
         expect(await model.save() == true, "Successful write was relabeled failed by a later refresh error")
         expect(model.draft.isEmpty, "Confirmed write left a duplicate-prone draft")
