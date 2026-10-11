@@ -1,0 +1,105 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Steffan Douglas Haskins
+import SwiftUI
+
+@MainActor
+final class KairosModel: ObservableObject {
+    @Published var signedIn = false
+    @Published var busy = false
+    @Published var loaded = false
+    @Published var journal: JournalEnvelope?
+    @Published var message: String?
+    @Published var email = ""
+    @Published var lastFetched: Date?
+    @Published var draft = ""
+    @Published var project = ""
+    @Published var exportURL: URL?
+    let api = KairosAPI()
+
+    func restore() async {
+        do {
+            signedIn = try api.restoreSession()
+            email = api.email ?? ""
+            if signedIn { await refresh() }
+        } catch { message = error.localizedDescription }
+    }
+
+    func signIn(email: String, password: String) async -> Bool {
+        busy = true; defer { busy = false }
+        do {
+            try await api.signIn(email: email, password: password)
+            self.email = api.email ?? email; signedIn = true
+            try await fetch()
+            return true
+        } catch { handle(error); return false }
+    }
+
+    private func fetch() async throws {
+        journal = try await api.journal(); loaded = true; lastFetched = Date(); message = nil
+    }
+
+    func refresh() async {
+        guard !busy else { return }
+        busy = true; defer { busy = false }
+        do { try await fetch() } catch { handle(error) }
+    }
+
+    func save() async -> Bool {
+        let slug = project.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard slug.isEmpty || slug.range(of: "^[a-z0-9]+(?:-[a-z0-9]+)*$", options: .regularExpression) != nil else {
+            message = "Use a short project name with letters, numbers or hyphens."; return false
+        }
+        busy = true; defer { busy = false }
+        do {
+            try await api.saveNote(text: draft, project: slug)
+            draft = ""; project = ""
+            try await fetch(); message = "Saved to your journal."
+            return true
+        } catch {
+            handle(error)
+            if error is URLError { message = "We couldn't confirm whether this note saved. Your draft is kept. Refresh your journal before trying again to avoid a duplicate." }
+            return false
+        }
+    }
+
+    func perform(_ action: String) async {
+        guard !busy else { return }
+        busy = true; defer { busy = false }
+        do {
+            switch action {
+            case "disconnect": try await api.disconnect(); try await fetch(); message = "All AI access disconnected. Your notes remain."
+            case "delete": try await api.deleteJournal(); try await fetch(); draft = ""; project = ""; message = "Active journal deleted."
+            case "create": try await api.recreateJournal(); try await fetch(); message = "New empty journal. Previous AI access remains disconnected."
+            case "signout": try await api.signOut(); clearDisplay(); message = "Signed out. Approved AI access remains until you disconnect it."
+            case "export":
+                let data = try await api.export()
+                let url = FileManager.default.temporaryDirectory.appendingPathComponent("kairos-journal-\(UUID().uuidString).json")
+                try data.write(to: url, options: [.atomic, .completeFileProtection]); exportURL = url
+                message = "Export prepared. Choose Share export to save or share your copy."
+            default: break
+            }
+        } catch { handle(error) }
+    }
+
+    private func clearDisplay() {
+        signedIn = false; loaded = false; journal = nil; email = ""; lastFetched = nil
+        draft = ""; project = ""; exportURL = nil
+    }
+
+    private func handle(_ error: Error) {
+        if let failure = error as? KairosFailure, failure.signInRequired {
+            try? api.forgetSession(); clearDisplay()
+        }
+        message = error is URLError ? "Can't reach Kairos. Check your connection and try again. Previously displayed notes haven't been refreshed." : error.localizedDescription
+    }
+
+    var claudeURL: URL {
+        var components = URLComponents(string: "https://claude.ai/customize/connectors")!
+        if journal?.claudeApproved != true {
+            components.queryItems = [.init(name: "modal", value: "add-custom-connector"),
+                                     .init(name: "connectorName", value: "Kairos"),
+                                     .init(name: "connectorUrl", value: KairosAPI.origin.absoluteString + "/mcp")]
+        }
+        return components.url!
+    }
+}
