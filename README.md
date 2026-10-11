@@ -2,7 +2,7 @@
 
 Native SwiftUI companion to the existing Kairos Journal service. Created by Steffan Douglas Haskins.
 
-Status: on October 11, 2026, the first native development install passed owner save and actual Claude iPhone read/write, with independent owner API confirmation. Signed archive, App Store distribution export, upload and processing then passed for version 0.1.0, build 1. The operator received Apple's invitation, installed Kairos-Bridge through TestFlight and opened its journal. This confirms the first owner TestFlight install/open; a new TestFlight read/write/reopen check is pending. See [ACCEPTANCE.md](ACCEPTANCE.md) for evidence and remaining gates. Customer signup, identity recovery and retention remain unfinished.
+Status: on October 11, 2026, signed archive, export, upload and processing passed for version 0.1.0, build 1. The operator installed Kairos-Bridge through Apple's TestFlight invitation and opened its journal. A new tagged native note was retrieved in a fresh actual Claude iPhone chat, which saved a reply. An independent owner API read confirmed both exact records; the operator confirmed the reply remained visible after native refresh/full close/reopen. Native Sign out preserved approved Claude access. Native Disconnect removed every approved connection while retaining all eight notes, independently confirmed through the owner API. See [ACCEPTANCE.md](ACCEPTANCE.md) for evidence and remaining gates. Physical export delivery and failure checks, clean onboarding, customer signup/recovery and retention remain unfinished.
 
 ## Scope
 
@@ -48,11 +48,11 @@ The included original beta icon is an opaque 1024-pixel PNG compiled through `As
 
 1. Repeat the remaining Simulator-only checks on a physical iPhone. Physical installation, sign-in, owner save and actual Claude retrieval/write have passed on the author's phone.
 2. Confirm secure-cookie handling and device-bound session persistence on that physical device.
-3. Explicitly confirm display of Claude's reply after native refresh, then repeat the native/provider round trip with an independent tester. The physical Claude test used keyword search because the owner left the optional project field empty; exact project-tag retrieval of that owner note was not tested.
+3. Repeat the passed TestFlight native/provider/reopen path with an independent tester. The original development-install owner note was untagged and found by keyword; the later TestFlight owner and Claude notes both carry project-kitchen.
 4. Observe loss of network, expired session and ambiguous save status; avoid inventing a successful fetch or silently duplicating a note.
-5. Repeat export, sign-out and Disconnect on a physical device; complete export delivery to Files. Simulator export preparation/share-sheet and access-control checks passed. The delete warning was inspected and cancelled; final active deletion requires explicit operator confirmation.
+5. Complete physical export delivery to Files. Physical native Sign out and Disconnect have passed on the author's TestFlight install. Simulator export preparation/share-sheet passed separately. The delete warning was inspected and cancelled; final active deletion requires explicit operator confirmation.
 6. Use a clean provider account and independent tester for guided setup.
-7. Complete the new TestFlight read/write/reopen and owner-control checks. Invitation delivery and the first TestFlight install/open are operator-confirmed. The earlier physical native read/write check used direct development installation.
+7. Complete physical TestFlight owner-control/failure checks before release automation or a wider pilot. Invitation/install and native/provider read-write/reopen have passed on one invited account with an existing approved connector.
 
 The earlier hosted and synthetic SDK checks remain separate evidence. The physical native/Claude read-write result now establishes this client path on one invited account, not clean customer onboarding or support for other providers.
 

@@ -32,11 +32,11 @@ The first sign-out attempt exposed a real navigation bug: the owner session ende
 
 ## Remaining acceptance
 
-- Physical device session persistence, explicit native display of the provider reply, and independent repetition of the completed physical native/Claude read-write path.
+- Independent repetition of the passed TestFlight native/Claude read-write and refresh/reopen path. Owner session recovery/retrieval after full close/reopen is operator-confirmed.
 - A clean provider setup and independent tester for the guided connection path. Prior hosted Claude iPhone tests are separate evidence.
 - Native network loss, expired-session handling, ambiguous save outcomes and control-request failures. Existing synthetic model checks do not establish those runtime conditions.
 - Completed export delivery to Files and final deletion/recreation with explicit operator confirmation.
-- TestFlight read/write/reopen and physical owner-control checks. Invitation delivery and first TestFlight install/open are operator-confirmed; App Store review remains separate.
+- Physical TestFlight owner-control/failure checks. Invitation/install and native/provider read-write/reopen passed; App Store review remains separate.
 - Customer signup, account recovery, complete account deletion and production retention/disclosure work.
 
 The registered bundle ID is `com.steffanhaskins.kairos`. The app consumes the existing invited staging origin. No customer credentials, invitation values, private exports, actual journals or Apple signing keys are included in this repository.
@@ -67,5 +67,24 @@ The operator reports creating **Kairos Owner Pilot**, adding himself as an inter
 The operator subsequently reported receiving Apple's invitation in Gmail, opening its link, installing Kairos-Bridge through TestFlight and opening the app to **JOURNAL**. This completes the first owner invitation/install/open gate. The installation was reported from the physical phone; an install/version screenshot was not captured. No additional sign-in was reported.
 
 A new TestFlight owner save with project `kitchen`, fresh actual Claude read/write, native refresh and close/reopen has been requested. That pending check remains separate from the passed development-install round trip. No separate redemption code or invitation URL has been received by the builder, and none is stored in public source.
+
+### Passed TestFlight read/write/reopen
+
+- Native owner note `0fd393260adc05f2`, actor `you`, `2026-10-11T22:14:44.327Z`, contains the synthetic copper-kettle note and `project-kitchen`.
+- A NEW actual Claude iPhone conversation retrieved it and saved reply `0c2a77086997a5ff`, actor `claude`, `2026-10-11T22:17:35.991Z`, also `project-kitchen`.
+- A separate owner API read returned HTTP 200 and both exact text/IDs/full timestamps/tags. That journal contained six notes.
+- The operator explicitly confirmed Claude's reply was still visible after native refresh, full close and reopening. No additional sign-in was reported.
+
+These results complete the first TestFlight native/provider/re-entry gate. They use one invited account and an already approved connector. Export delivery, failure handling, clean first-time setup and an independent tester remain open. Physical native Sign out/Disconnect passed subsequently, as recorded below. The earlier Simulator control checks remain distinct evidence.
+
+### Passed native TestFlight Sign out and Disconnect
+
+- The operator confirmed native Sign out returned to the Sign in screen. A NEW actual Claude chat used `journal_continue` to read the newest reply without reconnecting or writing. A separate owner API read retained six notes and one approval at observation.
+- An old private credential/test file led to a repeated owner/Claude test. Owner note `c22475fea68a901e` at `2026-10-11T22:36:02.636Z` and Claude reply `87f8c23beea4b34d` at `2026-10-11T22:36:44.182Z` were independently confirmed; both carry `project-kitchen`. All eight notes were preserved.
+- The operator reported native Disconnect made Claude ask to Reconnect / sign in, then explicitly reapproved the connection. The resulting one-approval snapshot did not certify the earlier revoked state and was not evidence of a defect.
+- After a repeated native Disconnect with no further reauthorization, the existing owner session's independent API read returned HTTP 200, **eight notes and zero approved connections** at `2026-10-11T22:45:39.987516Z`. No new grant was created to perform this check.
+- Private sign-in details were separated from historical test instructions. No credentials or exports are included in this repository.
+
+This completes native Sign out/Disconnect on one invited account. The Claude reconnect prompt is operator-reported; a raw provider HTTP refusal was not captured. Completed export delivery, failure handling, customer signup/recovery, clean first-time setup and independent repetition remain open.
 
 These results supersede the signing, physical-installation and actual-provider-pending statements in the earlier Simulator section. They do not establish physical failure handling, complete owner-control acceptance, customer onboarding, iPad behavior or other provider support.
