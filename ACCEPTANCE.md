@@ -1,23 +1,39 @@
-# First native source checkpoint — October 11, 2026
+# Native Simulator acceptance — October 11, 2026
 
 Actor: ChatGPT / gpt_codex. Scope: Kairos native iPhone client.
 
-## Observed
+## Environment and build
 
-- A real `Kairos.xcodeproj` target and shared `Kairos` scheme exist with six Swift sources.
-- All six sources passed the installed compiler's syntax parsing.
-- Foundation models, device Keychain storage and HTTP client passed macOS Command Line Tools type checking in Swift 5 mode.
-- Fourteen synthetic model checks passed on macOS. They made no network calls or Keychain accesses and do not prove the native transport.
-- `project.pbxproj` passed property-list parsing; the shared scheme passed XML parsing.
-- The existing hosted service's physical Claude iPhone retrieval after the guided update passed separately, with an independent owner read confirming the exact note and two retained entries.
+- Apple Xcode 27.0 (27A266a), iOS Simulator SDK 27.0; runtime iPhone 17 Simulator on iOS 26.0.
+- Steffan accepted the separate Xcode and Apple SDKs Agreement himself.
+- The actual target compiled successfully against the iOS SDK. The Simulator runtime used ad hoc signing (`CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-`) with Xcode's generated application-identifier entitlement.
+- The initial unsigned app compiled but showed a secure-storage error. That error was absent after Simulator signing; native sign-in and session persistence then passed. No Apple Developer certificate, team provisioning or TestFlight signature is established by this result.
+- The earlier six-file syntax/type checks, project/scheme parsing and fourteen macOS synthetic model checks remain separate preliminary evidence.
 
-## Not yet observed
+## Observed runtime checks
 
-- Compilation against the iOS SDK, Simulator launch or native HTTP sign-in.
-- Native Keychain session persistence on an iPhone or through relaunch.
-- Native-to-Claude memory round trip, export/share, disconnect, deletion or network-failure behavior.
-- Registered bundle identifier, signing team, icons, signed archive or TestFlight install.
+One disposable account on the existing invited HTTPS service was used. No personal journal or real customer data entered this check.
 
-Apple's official Xcode installation completed in the Mac App Store; the store showed Open. First launch presented the separate Xcode and Apple SDKs Agreement. Operator acceptance is pending. Installation and source type checks do not satisfy the native build gate. Full SDK compilation and runtime acceptance must supersede this receipt before calling the client working.
+| Check | Observed result |
+| --- | --- |
+| Native sign-in and retrieval | Native HTTP transport signed in and displayed the fixture note with its source, date and project. |
+| Native note save | The on-screen phone keyboard entered `synthetic native note`; Save completed, and a separate owner API read confirmed the exact text, actor `you`, timestamp and project tag. |
+| Relaunch | After process termination and relaunch, the app recovered its saved session and fetched the journal without another password entry. |
+| Synthetic MCP round trip | A separate MCP SDK client retrieved the native note and saved a `chatgpt` note. The reopened native app displayed all three records, newest first. Synthetic PKCE was used; no real provider callback was followed and no Claude/ChatGPT conversation took place. |
+| Export | The native app prepared a JSON file containing all three notes, opened Apple's share sheet, and the file was independently checked. No external share or completed Save to Files was performed. |
+| Sign-out | Native sign-out returned directly to the sign-in screen. A new MCP client process still retrieved the approved journal; all three notes and one grant remained. |
+| Disconnect | The native confirmation was accepted. A separate request using the previously valid AI credential received HTTP 401; all three notes remained and approved connections became zero. |
+| Delete warning | The irreversible warning was displayed and cancelled. No native deletion was performed. |
 
-No customer credentials, actual journals, invitation values or Apple signing keys are included in this repository. The application uses the existing invited staging origin and does not create new provider privileges or hosting resources.
+The first sign-out attempt exposed a real navigation bug: the owner session ended but a pushed control screen remained visible. Resetting the navigation stack at the sign-in boundary corrected it; the rebuilt app passed the same sign-out path.
+
+## Remaining acceptance
+
+- Physical native iPhone installation, device session persistence and a native-to-actual-provider round trip.
+- A clean provider setup and independent tester for the guided connection path. Prior hosted Claude iPhone tests are separate evidence.
+- Native network loss, expired-session handling, ambiguous save outcomes and control-request failures. Existing synthetic model checks do not establish those runtime conditions.
+- Completed export delivery to Files and final deletion/recreation with explicit operator confirmation.
+- Registered bundle identifier, Developer team signing, icons, manual archive/upload and internal TestFlight install.
+- Customer signup, account recovery, complete account deletion and production retention/disclosure work.
+
+The provisional bundle ID remains `com.steffanhaskins.kairos`. The app consumes the existing invited staging origin. No customer credentials, invitation values, private exports, actual journals or Apple signing keys are included in this repository.

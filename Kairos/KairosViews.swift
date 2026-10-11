@@ -11,6 +11,8 @@ struct KairosRoot: View {
                 .navigationTitle("Kairos")
                 .toolbar { ToolbarItem(placement: .topBarTrailing) { Text("Invited preview").font(.caption).foregroundStyle(.secondary) } }
         }
+        // A session boundary must also discard pushed journal/control screens.
+        .id(model.signedIn)
         .tint(Color(red: 0.22, green: 0.40, blue: 0.33))
         .onChange(of: scenePhase) { _, phase in
             if phase == .active && model.signedIn { Task { await model.refresh() } }
@@ -101,10 +103,17 @@ struct JournalView: View {
 struct ComposeView: View {
     @EnvironmentObject private var model: KairosModel
     @Environment(\.dismiss) private var dismiss
+    @FocusState private var editingNote: Bool
     var body: some View {
         NavigationStack {
             Form {
-                Section("A note for next time") { TextEditor(text: $model.draft).frame(minHeight: 160).accessibilityLabel("A note for next time") }
+                Section("A note for next time") {
+                    TextField("Write something to remember", text: $model.draft, axis: .vertical)
+                        .lineLimit(6...12)
+                        .focused($editingNote)
+                        .accessibilityLabel("A note for next time")
+                        .accessibilityIdentifier("note-draft")
+                }
                 Section("Project (optional)") { TextField("For example: kitchen", text: $model.project).textInputAutocapitalization(.never).autocorrectionDisabled() }
                 if let message = model.message { Section { Text(message) } }
                 Section {
@@ -114,7 +123,13 @@ struct ComposeView: View {
                     Text("If a save can't be confirmed, check your journal before trying again. Kairos doesn't automatically retry a note.").font(.footnote).foregroundStyle(.secondary)
                 }
             }.navigationTitle("Remember something")
-                .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Keep draft") { dismiss() }.disabled(model.busy) } }
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) { Button("Keep draft") { dismiss() }.disabled(model.busy) }
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") { editingNote = false }
+                    }
+                }
         }
     }
 }

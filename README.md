@@ -2,7 +2,7 @@
 
 Native SwiftUI companion to the existing Kairos Journal service. Created by Steffan Douglas Haskins.
 
-Status: first source target, not a signed TestFlight or App Store release. Build and physical-device acceptance must be recorded separately. This consumes the invited staging service; customer signup, identity recovery and retention remain unfinished.
+Status: the iOS SDK build and the first Simulator runtime checks passed on October 11, 2026. Native sign-in, note save, recovery after relaunch, export preparation, sign-out and Disconnect were exercised against the invited HTTPS service. See [ACCEPTANCE.md](ACCEPTANCE.md) for scope and remaining gates. Physical iPhone installation and TestFlight remain pending; customer signup, identity recovery and retention remain unfinished.
 
 ## Scope
 
@@ -20,11 +20,23 @@ Install Apple's full Xcode and iOS platform support. Accept the Apple license yo
 
 ```sh
 python3 scripts/generate_project.py
+# Compilation only; this unsigned build is not the runtime acceptance build.
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
   -project Kairos.xcodeproj -scheme Kairos \
   -destination 'generic/platform=iOS Simulator' \
   -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
 ```
+
+For Simulator runtime, select an installed iPhone Simulator in Xcode, or supply its UDID to the following command:
+
+```sh
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
+  -project Kairos.xcodeproj -scheme Kairos \
+  -destination 'platform=iOS Simulator,id=YOUR_SIMULATOR_UDID' \
+  -derivedDataPath build CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- build
+```
+
+The runtime check used Xcode's ad hoc Simulator signature and generated application-identifier entitlement. The unsigned app compiled but reported a secure-storage error on launch; the Simulator-signed build loaded and persisted its session. This is not Apple Developer team signing for a device or TestFlight.
 
 Open `Kairos.xcodeproj` in Xcode for the Simulator. Use only the disposable account provided privately by the operator. Credentials, invitation codes, exports and actual journals must not enter Git or public screenshots.
 
@@ -32,11 +44,11 @@ Open `Kairos.xcodeproj` in Xcode for the Simulator. Use only the disposable acco
 
 ## Acceptance still required
 
-1. Compile the actual target with the installed iOS SDK.
-2. Sign in through the native transport; prove secure-cookie parsing and app relaunch persistence.
-3. Retrieve a dated note, save a note, retrieve it from Claude, and read the AI's saved note in the app.
+1. Repeat the completed SDK and Simulator checks on a physical iPhone.
+2. Confirm secure-cookie handling and device-bound session persistence on that physical device.
+3. Complete native app → actual Claude iPhone conversation → native app read/write. The completed synthetic MCP SDK round trip is a protocol check, not an actual Claude or ChatGPT conversation.
 4. Observe loss of network, expired session and ambiguous save status; avoid inventing a successful fetch or silently duplicating a note.
-5. Check export, sign-out and Disconnect using a disposable account; active deletion requires explicit operator confirmation.
+5. Repeat export, sign-out and Disconnect on a physical device; complete export delivery to Files. Simulator export preparation/share-sheet and access-control checks passed. The delete warning was inspected and cancelled; final active deletion requires explicit operator confirmation.
 6. Use a clean provider account and independent tester for guided setup.
 7. Produce a signed manual archive and internal TestFlight install before release automation.
 
