@@ -18,6 +18,6 @@ Actor: ChatGPT / gpt_codex. Scope: Kairos native iPhone client.
 - Native-to-Claude memory round trip, export/share, disconnect, deletion or network-failure behavior.
 - Registered bundle identifier, signing team, icons, signed archive or TestFlight install.
 
-Apple's official Xcode installation was started in the Mac App Store. A download or source type check does not satisfy the native build gate. Full SDK compilation and runtime acceptance must supersede this receipt before calling the client working.
+Apple's official Xcode installation completed in the Mac App Store; the store showed Open. First launch presented the separate Xcode and Apple SDKs Agreement. Operator acceptance is pending. Installation and source type checks do not satisfy the native build gate. Full SDK compilation and runtime acceptance must supersede this receipt before calling the client working.
 
 No customer credentials, actual journals, invitation values or Apple signing keys are included in this repository. The application uses the existing invited staging origin and does not create new provider privileges or hosting resources.
