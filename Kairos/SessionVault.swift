@@ -3,9 +3,15 @@
 import Foundation
 import Security
 
+protocol SessionStoring {
+    func load() throws -> SessionVault.Session?
+    func save(_ session: SessionVault.Session) throws
+    func clear() throws
+}
+
 /// Foreground-only, device-bound Keychain storage. Never stores the password.
-struct SessionVault {
-    struct Cookie: Codable {
+struct SessionVault: SessionStoring {
+    struct Cookie: Codable, Equatable {
         let name: String
         let value: String
         let domain: String
@@ -13,7 +19,7 @@ struct SessionVault {
         let expires: Date?
     }
 
-    struct Session: Codable {
+    struct Session: Codable, Equatable {
         var email: String?
         var cookies: [Cookie]
     }

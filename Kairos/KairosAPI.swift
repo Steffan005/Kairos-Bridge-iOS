@@ -15,6 +15,7 @@ private final class RefuseRedirects: NSObject, URLSessionTaskDelegate {
 @MainActor
 protocol KairosServing {
     var email: String? { get }
+    var sessionStorageWarning: String? { get }
     func restoreSession() throws -> Bool
     func forgetSession() throws
     func signIn(email: String, password: String) async throws
@@ -27,13 +28,20 @@ protocol KairosServing {
     func signOut() async throws
 }
 
+extension KairosServing {
+    var sessionStorageWarning: String? { nil }
+}
+
 @MainActor
 final class KairosAPI: KairosServing {
     static let origin = URL(string: "https://kairos-journal-staging.onrender.com")!
-    private let vault = SessionVault()
+    private let vault: any SessionStoring
+    private let providedTransport: URLSession?
     private var saved = SessionVault.Session(email: nil, cookies: [])
+    private(set) var sessionStorageWarning: String?
     private let redirects = RefuseRedirects()
     private lazy var transport: URLSession = {
+        if let providedTransport { return providedTransport }
         let configuration = URLSessionConfiguration.ephemeral
         configuration.httpShouldSetCookies = false
         configuration.httpCookieStorage = nil
@@ -43,10 +51,16 @@ final class KairosAPI: KairosServing {
         return URLSession(configuration: configuration, delegate: redirects, delegateQueue: nil)
     }()
 
+    init(vault: any SessionStoring = SessionVault(), transport: URLSession? = nil) {
+        self.vault = vault
+        self.providedTransport = transport
+    }
+
     var email: String? { saved.email }
 
     func restoreSession() throws -> Bool {
         saved = try vault.load() ?? .init(email: nil, cookies: [])
+        sessionStorageWarning = nil
         saved.cookies.removeAll { $0.expires.map { $0 <= Date() } ?? false }
         return !saved.cookies.isEmpty
     }
@@ -54,6 +68,7 @@ final class KairosAPI: KairosServing {
     func forgetSession() throws {
         try vault.clear()
         saved = .init(email: nil, cookies: [])
+        sessionStorageWarning = nil
     }
 
     func signIn(email: String, password: String) async throws {
@@ -62,6 +77,7 @@ final class KairosAPI: KairosServing {
         guard !saved.cookies.isEmpty else { throw KairosFailure.invalidResponse }
         saved.email = reply.user.email
         try vault.save(saved)
+        sessionStorageWarning = nil
     }
 
     func journal() async throws -> JournalEnvelope {
@@ -79,16 +95,11 @@ final class KairosAPI: KairosServing {
     func export() async throws -> Data { try await request("/api/journal/export") }
 
     func signOut() async throws {
-        do { _ = try await request("/api/auth/sign-out", method: "POST", body: [:]) }
-        catch KairosFailure.secureStorage {
-            // request only persists cookies after a successful HTTP response.
-            saved = .init(email: nil, cookies: [])
-            try? vault.clear()
-            throw KairosFailure.signedOutStorageCleanup
-        }
+        _ = try await request("/api/auth/sign-out", method: "POST", body: [:])
         do { try forgetSession() }
         catch {
             saved = .init(email: nil, cookies: [])
+            sessionStorageWarning = nil
             throw KairosFailure.signedOutStorageCleanup
         }
     }
@@ -114,6 +125,7 @@ final class KairosAPI: KairosServing {
         let (data, response) = try await transport.data(for: request)
         guard let response = response as? HTTPURLResponse else { throw KairosFailure.invalidResponse }
         if (200..<300).contains(response.statusCode) {
+            let previousSession = saved
             let headers = response.allHeaderFields.reduce(into: [String: String]()) { result, pair in
                 if let key = pair.key as? String { result[key] = String(describing: pair.value) }
             }
@@ -126,7 +138,15 @@ final class KairosAPI: KairosServing {
                                                path: cookie.path, expires: cookie.expiresDate))
                 }
             }
-            if !cookies.isEmpty || !saved.cookies.isEmpty { try vault.save(saved) }
+            // Sign-in persists after validating the account reply; sign-out clears
+            // the vault itself. A later storage error must not turn an acknowledged
+            // journal write or control action into a reported server failure.
+            if saved != previousSession && path != "/api/auth/sign-in/email" && path != "/api/auth/sign-out" {
+                do { try vault.save(saved); sessionStorageWarning = nil }
+                catch {
+                    sessionStorageWarning = "This device couldn't save updated sign-in details. You may need to sign in again when you reopen Kairos."
+                }
+            }
             return data
         }
         let failure = try? JSONDecoder().decode(ServiceFailure.self, from: data)

@@ -71,3 +71,11 @@ A focused check reproduced loss of newer text when an earlier asynchronous save 
 Updated source `ade8045` subsequently passed Simulator-signed install, native sign-in, owner save and full termination/relaunch. A separate owner API confirmed the new tagged note; the reopened native app retrieved it without another sign-in. Fault injection and updated physical acceptance remain open. The generated project now prepares version **0.1.0, build 2**; that version change is preparation, not an Apple upload receipt.
 
 License: AGPL-3.0-or-later, matching the existing Journal source. See LICENSE.
+
+### Acknowledged response versus local session storage
+
+An injected HTTP 201 reproduced a confirmed note write being reported as failed when secure cookie persistence threw. The client now preserves the server acknowledgement and separately warns that this device may need a new sign-in. Unchanged cookies no longer trigger a redundant vault write. Initial sign-in still requires secure persistence; acknowledged sign-out distinguishes local cleanup failure.
+
+`python3 scripts/check_api_responses.py` passed sixteen synthetic checks of the actual API client with injected HTTP callbacks and storage: acknowledged save, unchanged cookies, strict sign-in, known sign-out cleanup, and acknowledged Disconnect preserving notes and clearing approval. No live network or physical Keychain fault was used. Twenty existing synthetic model checks and actual signed Simulator SDK compilation also passed.
+
+The earlier exported 0.1.0 build-2 candidate is superseded and was not uploaded. This source repair still requires normal native runtime acceptance and a freshly archived candidate before another upload. Session-expiry and ambiguous-response checks remain open; build 1 remains the physical TestFlight evidence.

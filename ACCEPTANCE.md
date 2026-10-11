@@ -112,3 +112,11 @@ The app was fully terminated and launched as a new process. Native accessibility
 The generated project now increments the next candidate to 0.1.0 build 2. No second TestFlight upload or installation is established by this preparation. Updated-source fault tests, physical install and independent onboarding remain open. A read-only Grok review was requested at the exact source revision before upload.
 
 These results supersede the signing, physical-installation and actual-provider-pending statements in the earlier Simulator section. They do not establish physical failure handling, complete owner-control acceptance, customer onboarding, iPad behavior or other provider support.
+
+### Acknowledged response versus local session storage
+
+An injected HTTP 201 reproduced a confirmed note write being reported as failed when secure cookie persistence threw. The client now preserves the server acknowledgement and separately warns that this device may need a new sign-in. Unchanged cookies no longer trigger a redundant vault write. Initial sign-in still requires secure persistence; acknowledged sign-out distinguishes local cleanup failure.
+
+`python3 scripts/check_api_responses.py` passed sixteen synthetic checks of the actual API client with injected HTTP callbacks and storage: acknowledged save, unchanged cookies, strict sign-in, known sign-out cleanup, and acknowledged Disconnect preserving notes and clearing approval. No live network or physical Keychain fault was used. Twenty existing synthetic model checks and actual signed Simulator SDK compilation also passed.
+
+The earlier exported 0.1.0 build-2 candidate is superseded and was not uploaded. This source repair still requires normal native runtime acceptance and a freshly archived candidate before another upload. Session-expiry and ambiguous-response checks remain open; build 1 remains the physical TestFlight evidence.

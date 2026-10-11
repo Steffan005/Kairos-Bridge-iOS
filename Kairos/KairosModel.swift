@@ -42,7 +42,7 @@ final class KairosModel: ObservableObject {
     private func fetch() async throws {
         journal = try await api.journal(); loaded = true; lastFetched = Date()
         // A successful read is not a receipt for an earlier uncertain write.
-        message = unconfirmedSave ? unconfirmedSaveMessage : nil
+        message = withSessionWarning(unconfirmedSave ? unconfirmedSaveMessage : nil)
     }
 
     func refresh() async {
@@ -70,7 +70,7 @@ final class KairosModel: ObservableObject {
             // A successful write receipt remains a success if the following read fails.
             do {
                 try await fetch()
-                message = newerDraft ? "Your note saved. Your newer draft is kept." : "Saved to your journal."
+                message = withSessionWarning(newerDraft ? "Your note saved. Your newer draft is kept." : "Saved to your journal.")
             }
             catch {
                 handle(error)
@@ -78,6 +78,7 @@ final class KairosModel: ObservableObject {
                 if signedIn && newerDraft {
                     message = "Your note saved. Your newer draft is kept. The journal couldn't refresh; try Refresh to see the saved note."
                 }
+                message = withSessionWarning(message)
             }
             return true
         } catch {
@@ -114,6 +115,7 @@ final class KairosModel: ObservableObject {
                 message = "Export prepared. Choose Share export to save or share your copy."
             default: break
             }
+            message = withSessionWarning(message)
         } catch {
             if case KairosFailure.signedOutStorageCleanup = error { clearDisplay() }
             handle(error)
@@ -126,12 +128,18 @@ final class KairosModel: ObservableObject {
         unconfirmedSave = false
     }
 
+    private func withSessionWarning(_ status: String?) -> String? {
+        guard let warning = api.sessionStorageWarning else { return status }
+        return [status, warning].compactMap { $0 }.joined(separator: " ")
+    }
+
     private func handle(_ error: Error) {
         if let failure = error as? KairosFailure, failure.signInRequired {
             try? api.forgetSession(); clearDisplay()
         }
         message = error is URLError ? "Can't reach Kairos. Check your connection and try again. Previously displayed notes haven't been refreshed." : error.localizedDescription
         if error is URLError && unconfirmedSave { message = unconfirmedSaveMessage }
+        message = withSessionWarning(message)
     }
 
     var claudeURL: URL {
