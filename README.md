@@ -2,7 +2,7 @@
 
 Native SwiftUI companion to the existing Kairos Journal service. Created by Steffan Douglas Haskins.
 
-Status: on October 11, 2026, a signed build was installed and opened on a physical iPhone. A note saved in that native app was retrieved in a fresh actual Claude iPhone conversation, which wrote a reply into the same journal. A separate owner API read confirmed both exact records. Signed archive and App Store distribution export also succeeded. TestFlight upload is pending the matching App Store Connect app record. See [ACCEPTANCE.md](ACCEPTANCE.md) for the separate Simulator results and remaining gates. Customer signup, identity recovery and retention remain unfinished.
+Status: on October 11, 2026, a signed build was installed and opened on a physical iPhone. A note saved in that native app was retrieved in a fresh actual Claude iPhone conversation, which wrote a reply into the same journal. A separate owner API read confirmed both exact records. Signed archive, App Store distribution export and Apple upload succeeded for version 0.1.0, build 1. Apple reported the package processing. The store record is Kairos-Bridge; TestFlight processing completion, invitation and installation remain unconfirmed. See [ACCEPTANCE.md](ACCEPTANCE.md) for the separate Simulator results and remaining gates. Customer signup, identity recovery and retention remain unfinished.
 
 ## Scope
 
@@ -40,7 +40,7 @@ The runtime check used Xcode's ad hoc Simulator signature and generated applicat
 
 Open `Kairos.xcodeproj` in Xcode for the Simulator. Use only the disposable account provided privately by the operator. Credentials, invitation codes, exports and actual journals must not enter Git or public screenshots.
 
-`com.steffanhaskins.kairos` was registered through Xcode automatic provisioning and used for the signed physical-device build and App Store distribution export. Its App Store Connect app record and successful upload remain separate gates. Put your local `DEVELOPMENT_TEAM` and any alternate `PRODUCT_BUNDLE_IDENTIFIER` in the ignored `Config/Signing.local.xcconfig` so project regeneration preserves them. No team is configured in the public source. Customer account deletion and store privacy disclosures remain ahead.
+`com.steffanhaskins.kairos` was registered through Xcode automatic provisioning and used for the signed physical-device build, App Store distribution export and successful upload to the Kairos-Bridge app record. Put your local `DEVELOPMENT_TEAM` and any alternate `PRODUCT_BUNDLE_IDENTIFIER` in the ignored `Config/Signing.local.xcconfig` so project regeneration preserves them. No team is configured in the public source. Customer account deletion and store privacy disclosures remain ahead.
 
 The included original beta icon is an opaque 1024-pixel PNG compiled through `Assets.xcassets`. Regenerate its artwork with `swift scripts/generate_icon.swift` on macOS. The project generator includes the catalog and the signing configuration; normal users do not run these developer scripts.
 
@@ -52,7 +52,7 @@ The included original beta icon is an opaque 1024-pixel PNG compiled through `As
 4. Observe loss of network, expired session and ambiguous save status; avoid inventing a successful fetch or silently duplicating a note.
 5. Repeat export, sign-out and Disconnect on a physical device; complete export delivery to Files. Simulator export preparation/share-sheet and access-control checks passed. The delete warning was inspected and cancelled; final active deletion requires explicit operator confirmation.
 6. Use a clean provider account and independent tester for guided setup.
-7. Create the matching App Store Connect record, upload the already signed archive, and complete internal TestFlight installation before release automation. Exporting a distribution package is not an Apple upload receipt.
+7. Confirm Apple processing, invite the owner to an internal TestFlight group, and complete TestFlight installation before release automation. The upload receipt is not a TestFlight installation receipt.
 
 The earlier hosted and synthetic SDK checks remain separate evidence. The physical native/Claude read-write result now establishes this client path on one invited account, not clean customer onboarding or support for other providers.
 

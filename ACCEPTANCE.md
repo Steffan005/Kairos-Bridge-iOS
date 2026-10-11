@@ -36,7 +36,7 @@ The first sign-out attempt exposed a real navigation bug: the owner session ende
 - A clean provider setup and independent tester for the guided connection path. Prior hosted Claude iPhone tests are separate evidence.
 - Native network loss, expired-session handling, ambiguous save outcomes and control-request failures. Existing synthetic model checks do not establish those runtime conditions.
 - Completed export delivery to Files and final deletion/recreation with explicit operator confirmation.
-- Matching App Store Connect app record, successful Apple upload/processing and internal TestFlight install. Bundle registration, Developer team signing, signed archive and App Store distribution export passed; acceptance of the icon in an Apple upload is not yet established.
+- Completed Apple processing, internal TestFlight invitation and installation. Bundle registration, Developer team signing, signed archive, App Store distribution export and upload passed; App Store review remains separate.
 - Customer signup, account recovery, complete account deletion and production retention/disclosure work.
 
 The registered bundle ID is `com.steffanhaskins.kairos`. The app consumes the existing invited staging origin. No customer credentials, invitation values, private exports, actual journals or Apple signing keys are included in this repository.
@@ -51,5 +51,9 @@ Compiled source: `acc89ce65003e2f2d88da341025ac2e3df675d1a`, version 0.1.0, buil
 - An independent owner API read returned HTTP 200 and both exact records. The journal contained four notes. The operator reported the requested instructions complete; native display of the reply after refresh was not separately stated or captured.
 - Signed Release archive and App Store distribution export succeeded. Both app signatures passed strict verification. The exported profile has no device list, permits beta reports, and disables `get-task-allow`. This proves package preparation, not TestFlight availability.
 - The first upload attempt failed with Apple's explicit error that the matching App Store Connect app record was not found. There is no successful upload, processed build or TestFlight invitation receipt yet.
+
+### Superseding upload receipt
+
+The operator created the matching app record with name **Kairos-Bridge**, after Apple rejected **Kairos** as already in use. The repeated Xcode upload returned exit 0 and `EXPORT SUCCEEDED`. Apple logged `Upload succeeded` at `2026-10-11T12:31:51Z` and reported the package processing. This clears the missing-record/upload gate above. Processing completion, internal group invitation and TestFlight installation remain unconfirmed. No App Store Connect API key was used, and no public App Store release was submitted.
 
 These results supersede the signing, physical-installation and actual-provider-pending statements in the earlier Simulator section. They do not establish physical failure handling, complete owner-control acceptance, customer onboarding, iPad behavior or other provider support.
