@@ -14,6 +14,14 @@ final class KairosModel: ObservableObject {
     @Published var draft = ""
     @Published var project = ""
     @Published var exportURL: URL?
+    private struct HeldDraft {
+        let ownerEmail: String
+        let text: String
+        let project: String
+        let unconfirmedSave: Bool
+    }
+    // In-memory only. Never expose an expired owner's draft to another account.
+    private var heldDraft: HeldDraft?
     private var unconfirmedSave = false
     private let unconfirmedSaveMessage = "We couldn't confirm whether an earlier note saved. Your draft is kept. Check your journal before saving again to avoid a duplicate."
     let api: any KairosServing
@@ -33,8 +41,13 @@ final class KairosModel: ObservableObject {
         busy = true; defer { busy = false }
         do {
             try await api.signIn(email: email, password: password)
-            self.email = api.email ?? email; signedIn = true
+            guard let ownerEmail = api.email, !ownerEmail.isEmpty else { throw KairosFailure.invalidResponse }
+            self.email = ownerEmail; signedIn = true
+            let recoveredDraft = recoverHeldDraft(for: self.email)
             try await fetch()
+            if recoveredDraft {
+                message = withSessionWarning(unconfirmedSave ? unconfirmedSaveMessage : "Your unsent draft is recovered. Open Remember something to continue it.")
+            }
             return true
         } catch { handle(error); return false }
     }
@@ -82,7 +95,7 @@ final class KairosModel: ObservableObject {
             }
             return true
         } catch {
-            if error is URLError { unconfirmedSave = true }
+            if saveOutcomeIsUnconfirmed(error) { unconfirmedSave = true }
             handle(error)
             return false
         }
@@ -126,6 +139,17 @@ final class KairosModel: ObservableObject {
         signedIn = false; loaded = false; journal = nil; email = ""; lastFetched = nil
         draft = ""; project = ""; exportURL = nil
         unconfirmedSave = false
+        heldDraft = nil
+    }
+
+    private func recoverHeldDraft(for ownerEmail: String) -> Bool {
+        guard let held = heldDraft else { return false }
+        heldDraft = nil
+        // Both values come from successful server sign-in/session restoration,
+        // rather than trusting the email typed into the sign-in form.
+        guard held.ownerEmail == ownerEmail else { return false }
+        draft = held.text; project = held.project; unconfirmedSave = held.unconfirmedSave
+        return true
     }
 
     private func withSessionWarning(_ status: String?) -> String? {
@@ -133,12 +157,29 @@ final class KairosModel: ObservableObject {
         return [status, warning].compactMap { $0 }.joined(separator: " ")
     }
 
+    private func saveOutcomeIsUnconfirmed(_ error: Error) -> Bool {
+        if error is URLError || error is CancellationError { return true }
+        guard let failure = error as? KairosFailure else { return false }
+        switch failure {
+        case .invalidResponse: return true
+        case .service(let status, _): return status == 408 || (500...599).contains(status)
+        default: return false
+        }
+    }
+
     private func handle(_ error: Error) {
         if let failure = error as? KairosFailure, failure.signInRequired {
+            let held = !email.isEmpty && !draft.isEmpty
+                ? HeldDraft(ownerEmail: email, text: draft, project: project, unconfirmedSave: unconfirmedSave)
+                : heldDraft
             try? api.forgetSession(); clearDisplay()
+            heldDraft = held
         }
         message = error is URLError ? "Can't reach Kairos. Check your connection and try again. Previously displayed notes haven't been refreshed." : error.localizedDescription
-        if error is URLError && unconfirmedSave { message = unconfirmedSaveMessage }
+        if unconfirmedSave { message = unconfirmedSaveMessage + " " + (message ?? "") }
+        if heldDraft != nil {
+            message = (message ?? "") + " Your unsent draft is held while Kairos stays open. Sign in to the same account to recover it."
+        }
         message = withSessionWarning(message)
     }
 

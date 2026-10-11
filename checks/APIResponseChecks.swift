@@ -26,6 +26,8 @@ private final class FixtureHTTP: URLProtocol {
     static var mutations = 0
     static var rotateCookie = true
     static var approved = true
+    static var saveStatus = 201
+    static var dropSaveResponse = false
     override class func canInit(with request: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
     override func startLoading() {
@@ -36,7 +38,10 @@ private final class FixtureHTTP: URLProtocol {
         var status = 200
         switch url.path {
         case "/api/journal/notes":
-            Self.mutations += 1; status = 201
+            Self.mutations += 1; status = Self.saveStatus
+            if Self.dropSaveResponse {
+                client?.urlProtocol(self, didFailWithError: URLError(.timedOut)); return
+            }
             body = "{\"id\":\"synthetic-ack\",\"text\":\"Synthetic response check\"}"
         case "/api/auth/sign-in/email":
             body = "{\"user\":{\"email\":\"fixture@example.test\"}}"
@@ -130,6 +135,23 @@ struct APIResponseChecks {
                "Acknowledged Disconnect did not preserve notes and clear approval")
         expect(model.message?.contains("disconnected") == true && model.message?.contains("couldn't save") == true,
                "Disconnect hid either acknowledgement or storage warning")
+        for (status, dropResponse) in [(503, false), (201, true)] {
+            FixtureHTTP.mutations = 0; FixtureHTTP.saveStatus = status; FixtureHTTP.dropSaveResponse = dropResponse
+            let ambiguousVault = FixtureVault(); ambiguousVault.failSave = false
+            let ambiguousAPI = KairosAPI(vault: ambiguousVault, transport: transport)
+            let ambiguousModel = KairosModel(api: ambiguousAPI)
+            await ambiguousModel.restore()
+            ambiguousModel.draft = "Synthetic possibly committed note"
+            expect(await ambiguousModel.save() == false, "Unknown mutation was reported confirmed")
+            expect(FixtureHTTP.mutations == 1, "Failed-response mutation was retried")
+            expect(ambiguousModel.draft == "Synthetic possibly committed note", "Unknown commit discarded draft")
+            expect(ambiguousModel.message?.contains("couldn't confirm") == true,
+                   "Committed fixture with failed response didn't explain uncertainty")
+            await ambiguousModel.refresh()
+            expect(ambiguousModel.message?.contains("couldn't confirm") == true && FixtureHTTP.mutations == 1,
+                   "Read certified the earlier unknown commit or repeated its mutation")
+        }
+
         print("\(passed) synthetic API-response checks passed; no live network or Keychain.")
     }
 }

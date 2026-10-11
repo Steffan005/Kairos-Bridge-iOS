@@ -8,6 +8,9 @@ private final class FixtureAPI: KairosServing {
     var email: String? = "fixture@example.test"
     var fetchFails = false
     var saveFails = false
+    var saveError: Error?
+    var fetchError: Error?
+    var reportedOwnerEmail: String?
     var saveCalls = 0
     var disconnectCalls = 0
     var deleteCalls = 0
@@ -21,8 +24,9 @@ private final class FixtureAPI: KairosServing {
                              created_at: "2026-10-11T02:59:50.817Z", tags: ["project-kitchen"])
     func restoreSession() throws -> Bool { true }
     func forgetSession() throws { }
-    func signIn(email: String, password: String) async throws { self.email = email }
+    func signIn(email: String, password: String) async throws { self.email = reportedOwnerEmail ?? email }
     func journal() async throws -> JournalEnvelope {
+        if let fetchError { throw fetchError }
         if fetchFails { throw URLError(.notConnectedToInternet) }
         return .init(deleted: false, entries: [entry], connections: [.init(clientId: "https://claude.ai/oauth/mcp-oauth-client-metadata", scopes: ["journal:read"])], count: 1)
     }
@@ -30,6 +34,7 @@ private final class FixtureAPI: KairosServing {
         saveCalls += 1
         lastSavedText = text; lastSavedProject = project
         duringSave?()
+        if let saveError { throw saveError }
         if saveFails { throw URLError(.timedOut) }
     }
     func disconnect() async throws { disconnectCalls += 1 }
@@ -116,6 +121,62 @@ struct ModelChecks {
         await model.perform("signout")
         expect(model.signedIn == false && model.journal == nil && model.message?.contains("server session has ended") == true,
                "Successful server sign-out with a local cleanup error retained the journal screen")
+
+        let expiryAPI = FixtureAPI()
+        let expiryModel = KairosModel(api: expiryAPI)
+        await expiryModel.restore()
+        expiryModel.draft = "Unsent owner's draft"; expiryModel.project = "kitchen"
+        expiryAPI.saveError = KairosFailure.service(401, "Please sign in again.")
+        expect(await expiryModel.save() == false && !expiryModel.signedIn && expiryModel.journal == nil,
+               "Expired owner session did not hide the journal")
+        expect(expiryModel.draft.isEmpty && expiryModel.message?.contains("same account") == true,
+               "Expired sign-in silently discarded the unsent draft")
+        expiryAPI.saveError = nil
+        expect(await expiryModel.signIn(email: "fixture@example.test", password: "synthetic") == true,
+               "Same-owner reauthentication fixture failed")
+        expect(expiryModel.draft == "Unsent owner's draft" && expiryModel.project == "kitchen",
+               "Same-owner reauthentication lost the held draft")
+        expect(expiryModel.message?.contains("draft") == true,
+               "Recovered draft was not explained")
+        expiryAPI.fetchError = KairosFailure.service(401, "Please sign in again.")
+        await expiryModel.refresh()
+        expiryAPI.fetchError = nil
+        expiryAPI.reportedOwnerEmail = "different@example.test"
+        _ = await expiryModel.signIn(email: "fixture@example.test", password: "synthetic")
+        expect(expiryModel.draft.isEmpty && expiryModel.project.isEmpty,
+               "Different owner inherited a held draft")
+
+        let uncertainAPI = FixtureAPI()
+        let uncertainModel = KairosModel(api: uncertainAPI)
+        await uncertainModel.restore()
+        uncertainModel.draft = "Possibly committed note"
+        uncertainAPI.saveError = KairosFailure.service(503, "Service temporarily unavailable")
+        expect(await uncertainModel.save() == false && uncertainModel.draft == "Possibly committed note",
+               "Unknown server outcome discarded the draft")
+        expect(uncertainModel.message?.contains("couldn't confirm") == true && uncertainAPI.saveCalls == 1,
+               "Ambiguous server response encouraged a duplicate or retried")
+        await uncertainModel.refresh()
+        expect(uncertainModel.message?.contains("couldn't confirm") == true,
+               "Later read erased uncertainty from a server failure")
+
+        let rejectedAPI = FixtureAPI()
+        let rejectedModel = KairosModel(api: rejectedAPI)
+        await rejectedModel.restore()
+        rejectedModel.draft = "Rejected note"
+        rejectedAPI.saveError = KairosFailure.service(400, "Synthetic validation rejection")
+        _ = await rejectedModel.save()
+        expect(rejectedModel.draft == "Rejected note" && rejectedModel.message == "Synthetic validation rejection",
+               "Known validation rejection was labeled an uncertain commit")
+
+        for ambiguous in [KairosFailure.service(408, "Timeout"), .service(502, "Proxy failure"), .invalidResponse] {
+            let failedAPI = FixtureAPI()
+            let failedModel = KairosModel(api: failedAPI)
+            await failedModel.restore(); failedModel.draft = "Held synthetic draft"
+            failedAPI.saveError = ambiguous
+            _ = await failedModel.save()
+            expect(failedModel.message?.contains("couldn't confirm") == true && failedAPI.saveCalls == 1,
+                   "Ambiguous response lost uncertainty or retried")
+        }
 
         print("\(passed) synthetic native-model checks passed; no iOS SDK or physical-device claim.")
     }

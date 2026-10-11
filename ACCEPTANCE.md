@@ -120,3 +120,11 @@ An injected HTTP 201 reproduced a confirmed note write being reported as failed 
 `python3 scripts/check_api_responses.py` passed sixteen synthetic checks of the actual API client with injected HTTP callbacks and storage: acknowledged save, unchanged cookies, strict sign-in, known sign-out cleanup, and acknowledged Disconnect preserving notes and clearing approval. No live network or physical Keychain fault was used. Twenty existing synthetic model checks and actual signed Simulator SDK compilation also passed.
 
 The earlier exported 0.1.0 build-2 candidate is superseded and was not uploaded. This source repair still requires normal native runtime acceptance and a freshly archived candidate before another upload. Session-expiry and ambiguous-response checks remain open; build 1 remains the physical TestFlight evidence.
+
+### Expired sign-in and ambiguous save response repairs
+
+Focused failing fixtures reproduced expiry erasing an unsent draft and an ambiguous server failure omitting the uncertainty warning. The model holds the expired account's draft in app memory, hides the journal/active draft after 401, and restores it only when the same server-reported account email signs in again. A different account does not receive it. Explicit session reset discards the held draft. The message explains that it survives only while Kairos stays open; there is no durable draft storage across process termination.
+
+Save outcomes from transport/cancellation, invalid responses, 408 and 5xx remain unconfirmed. Later reads retain the warning, and mutations are not automatically retried. Known validation rejection remains distinct. Thirty-three synthetic model checks and twenty-six actual-API callback checks passed, including simulated commit followed by 503 or a dropped reply. These are injected macOS faults, not physical iPhone/Keychain faults.
+
+The signed Simulator SDK target passed and the repaired app installed/launched, restored the existing session and retrieved the exact amber note with its actor/date/project and fresh timestamp. No new native save or native-UI fault injection is claimed for this revision. The previous build-2 package remains superseded; a fresh exact archive is required. Physical TestFlight remains build 1.
