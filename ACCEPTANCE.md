@@ -196,4 +196,16 @@ Adaptive colors now explicitly cover both background and row surfaces, including
 
 Actual signed Simulator build/reopen passed. Normal light and dark renders, and maximum text-size11 in both appearances, were inspected. The full Anamnesis title and fixed labeled controls remained readable. Declared text/background and control-outline pairs passed17 calculated contrast checks (minimum text6.41:1; tested outline3.84:1). This is scoped contrast/rendering evidence, not complete accessibility certification. All33 model,26 API and22 display-window checks passed on the existing40-record fixture; no new test notes were inserted.
 
-Build4 exact-source packaging/upload/assignment and physical color confirmation are pending. Compiled/installed build3 evidence remains separate. The hosted executable and existing AI approvals are unchanged.
+Build 4 exact-source archive/export, Apple upload, processing and group assignment passed; physical color confirmation remains pending. Compiled/installed build3 evidence remains separate. The hosted executable and existing AI approvals are unchanged.
+
+### Build 4 signed package and Apple upload — October 12
+
+Exact compiled source `350c97874b47457f8a78833a6de00d95d59cc432`, clean and remote-matched, archived as **0.1.0 (4)**. Strict archive/app signatures passed. Exported profile is App Store distribution with beta reports active, no development debugging entitlement or device provisioning list. Exported IPA SHA-256: `9efd855efa8f0898b322ac076bef4349219694aa94e9002476e3a663030f5edf`. The upload operation re-exported that archive and may resign package bytes; the exported hash is not a claim about Apple's received bytes.
+
+Existing Xcode account upload returned exit 0, Upload succeeded and EXPORT SUCCEEDED at **2026-10-12T20:18:24.386Z**. Apple reported processing. No new API key, tester, service charge or public review submission. Receipt files remain outside this public repository. Upload is not installation evidence; the last operator-confirmed phone build remains 3 until an explicit build 4 update and color check. Search implementation is on hold by Steffan's request.
+
+### Build 4 owner TestFlight assignment
+
+Actual Apple upload queue showed build 4 Complete. The existing Kairos Owner Pilot Add Build dialog showed **4 Ready to Test**. ChatGPT selected only 4 and completed Add. The actual group screen then showed **1 tester, 4 builds and 0.1.0 (4) Testing**, with builds 1–3 retained. Full screenshot and accessibility receipts are saved outside the public repository. This is an observed assignment, not a successful-click assumption.
+
+The owner was asked to Update/Open version 0.1.0 (4) on the iPhone, confirm existing notes and selectors, and send the dark journal screenshot. That physical result is pending. No new write test or provider reauthorization was requested. Search remains on explicit hold, and the hosted executable is unchanged.
