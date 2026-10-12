@@ -2,6 +2,7 @@
 // Copyright (C) 2026 Steffan Douglas Haskins
 import SwiftUI
 import UIKit
+import UIKit
 
 private struct KairosActionStyle: ButtonStyle {
     var primary = false
@@ -100,20 +101,18 @@ struct SignInView: View {
 
 struct JournalView: View {
     @EnvironmentObject private var model: KairosModel
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @StateObject private var browser = JournalSearchModel()
     @State private var composing = false
-    @State private var window = JournalWindow()
+    @State private var searchText = ""
+    @State private var mode = JournalSearchMode.words
     @State private var selectedProject = ""
     @State private var selectedAuthor = ""
+    @State private var refresh = 0
+    @FocusState private var searching: Bool
 
-    private var loadedEntries: [JournalEntry] { model.journal?.entries ?? [] }
-    private var projects: [String] {
-        Array(Set(loadedEntries.flatMap { $0.tags.filter { $0.hasPrefix("project-") } })).sorted()
-    }
-    private var authors: [String] { Array(Set(loadedEntries.map(\.actor))).sorted() }
-    private var matchingEntries: [JournalEntry] {
-        window.matching(loadedEntries, project: selectedProject, author: selectedAuthor)
+    private var query: JournalQuery {
+        JournalQuery(text: searchText, mode: mode, project: selectedProject, author: selectedAuthor)
     }
 
     var body: some View {
@@ -127,13 +126,12 @@ struct JournalView: View {
                             }
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Anamnesis").font(.system(.title, design: .serif).weight(.semibold)).foregroundStyle(KairosStyle.ink)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                    .layoutPriority(1)
+                                    .fixedSize(horizontal: false, vertical: true).layoutPriority(1)
                                 Text("Your journal").font(.subheadline).foregroundStyle(KairosStyle.secondaryInk)
                             }
                         }
                         Text("The bridge to remembrance.").font(.subheadline)
-                        if let date = model.lastFetched {
+                        if let date = browser.lastFetched {
                             Text("Last refreshed \(date.formatted(date: .abbreviated, time: .standard))")
                                 .font(.caption).foregroundStyle(KairosStyle.secondaryInk)
                         }
@@ -150,106 +148,158 @@ struct JournalView: View {
                     Section("View your memories") {
                         Picker("Project", selection: $selectedProject) {
                             Text("All projects").tag("")
-                            ForEach(projects, id: \.self) { Text(projectLabel($0)).tag($0) }
-                        }
+                            ForEach(browser.projects, id: \.self) { Text(projectLabel($0)).tag($0) }
+                        }.accessibilityIdentifier("project-filter")
                         Picker("Author", selection: $selectedAuthor) {
                             Text("All authors").tag("")
-                            ForEach(authors, id: \.self) { actor in
-                                Text(sourceLabel(actor)).tag(actor)
-                            }
-                        }
-                        Text("Views of your recent notes. AI access stays the same.")
-                            .font(.footnote).foregroundStyle(KairosStyle.secondaryInk)
+                            ForEach(browser.authors, id: \.self) { Text(sourceLabel($0)).tag($0) }
+                        }.accessibilityIdentifier("author-filter")
+                        Text(mode.hint).font(.footnote).foregroundStyle(KairosStyle.secondaryInk)
                     }
-                    Section(selectedProject.isEmpty && selectedAuthor.isEmpty ? "Recent memories" : "Recent matching memories") {
-                        if model.loaded && matchingEntries.isEmpty {
-                            Text(loadedEntries.isEmpty
-                                 ? "No notes yet. Tap Remember to begin."
-                                 : "No matching notes in the loaded memories. Choose another view to see more.")
-                                .foregroundStyle(KairosStyle.secondaryInk)
-                        }
-                        ForEach(window.visible(matchingEntries)) { entry in
-                            MemoryRow(entry: entry)
-                        }
-                        if matchingEntries.count > window.visibleCount {
-                            Button {
-                                withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
-                                    window.showMore(matchingCount: matchingEntries.count)
-                                }
-                            } label: {
-                                Label("Show more", systemImage: "chevron.down")
-                                    .frame(maxWidth: .infinity, minHeight: 44)
+                    Section(query.isSearch ? "Search results" : "Your memories") {
+                        if browser.loaded {
+                            Text("\(browser.total) \(query.isSearch ? "matching " : "")\(browser.total == 1 ? "memory" : "memories") · Whole journal · Newest first")
+                                .font(.footnote).foregroundStyle(KairosStyle.secondaryInk)
+                                .accessibilityIdentifier("search-result-count")
+                            if browser.matchedMode == "any" {
+                                Text("No notes contain all of these words. Showing notes containing any of them.")
+                                    .font(.footnote).foregroundStyle(KairosStyle.secondaryInk)
                             }
+                            if browser.entries.isEmpty { Text(emptyMessage).foregroundStyle(KairosStyle.secondaryInk) }
+                        }
+                        ForEach(browser.entries) { entry in MemoryRow(entry: entry) }
+                        if browser.loading {
+                            ProgressView(query.isSearch ? "Searching…" : "Loading memories…")
+                                .accessibilityIdentifier("search-loading")
+                        }
+                        if let message = browser.message {
+                            Text(message).accessibilityIdentifier("search-message")
+                            if query.validationMessage == nil {
+                                Button("Try again") { refresh += 1 }.disabled(browser.loading)
+                            }
+                        }
+                        if browser.hasMore {
+                            Button {
+                                searching = false
+                                Task { await browser.showMore(owner: model.email, api: model.api, onExpired: model.searchSessionExpired) }
+                            } label: {
+                                Label("Show more", systemImage: "chevron.down").frame(maxWidth: .infinity, minHeight: 44)
+                            }
+                            .disabled(browser.loading || !browser.current || model.busy)
                             .accessibilityLabel("Show more memories")
-                            .accessibilityHint("Reveals the next group of already loaded notes.")
+                            .accessibilityHint("Loads older matching notes from your journal.")
                             .accessibilityIdentifier("show-more-memories")
                         }
-                    }
-                    if model.loaded {
-                        Section {
-                            Text("Showing \(min(window.visibleCount, matchingEntries.count)) of \(matchingEntries.count) loaded\(selectedProject.isEmpty && selectedAuthor.isEmpty ? "" : " matching") memories.")
-                            if let count = model.journal?.count {
-                                Text("\(loadedEntries.count) notes loaded · \(count) notes in your journal.")
-                                if count > loadedEntries.count {
-                                    Text("Earlier notes aren't loaded in this version. Your export includes the full journal.")
-                                }
-                            }
-                        }.font(.footnote).foregroundStyle(KairosStyle.secondaryInk)
+                        if browser.loaded {
+                            Text("Showing \(browser.entries.count) of \(browser.total) memories.")
+                                .font(.footnote).foregroundStyle(KairosStyle.secondaryInk)
+                        }
                     }
                 }
             }.listRowBackground(KairosStyle.surface)
         }
         .foregroundStyle(KairosStyle.ink)
         .scrollContentBackground(.hidden).background(KairosStyle.background)
-        .safeAreaInset(edge: .top, spacing: 0) { actions }
+        .scrollDismissesKeyboard(.interactively)
+        .safeAreaInset(edge: .top, spacing: 0) {
+            VStack(alignment: .leading, spacing: 10) {
+                actions
+                if model.journal?.deleted != true { searchControls }
+            }
+            .padding(.horizontal, 16).padding(.vertical, 10)
+            .background(KairosStyle.background).overlay(alignment: .bottom) { Divider() }
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button { Task { await model.refresh() } } label: { Image(systemName: "arrow.clockwise") }
+                Button { searching = false; Task { await model.refresh() } } label: { Image(systemName: "arrow.clockwise") }
                     .accessibilityLabel("Refresh journal").disabled(model.busy)
             }
         }
         .refreshable { await model.refresh() }
         .sheet(isPresented: $composing) { ComposeView() }
-        .onChange(of: selectedProject) { _, _ in window.reset() }
-        .onChange(of: selectedAuthor) { _, _ in window.reset() }
-        .onChange(of: projects) { _, current in
-            if !selectedProject.isEmpty && !current.contains(selectedProject) { selectedProject = "" }
+        .onChange(of: query) { _, value in browser.prepare(value, owner: model.email) }
+        .onChange(of: model.lastFetched) { _, _ in refresh += 1 }
+        .onChange(of: model.journal?.deleted) { _, deleted in
+            if deleted == true { browser.reset(); searchText = ""; selectedProject = ""; selectedAuthor = "" }
         }
-        .onChange(of: authors) { _, current in
-            if !selectedAuthor.isEmpty && !current.contains(selectedAuthor) { selectedAuthor = "" }
+        .onDisappear { browser.cancel() }
+        .task(id: JournalRequest(query: query, owner: model.email, refresh: refresh, deleted: model.journal?.deleted == true)) {
+            let requested = query; let owner = model.email
+            guard model.signedIn, model.journal?.deleted != true else { browser.reset(); return }
+            if requested.isSearch {
+                do { try await Task.sleep(nanoseconds: 250_000_000) } catch { return }
+            }
+            await browser.reload(requested, owner: owner, api: model.api, onExpired: model.searchSessionExpired)
         }
+    }
+
+    private var emptyMessage: String {
+        if query.isSearch && mode == .id { return "No memory has that note ID. Check the ID or clear your filters." }
+        if query.isSearch { return "No memories match. Try fewer words or clear your filters." }
+        if !selectedProject.isEmpty || !selectedAuthor.isEmpty { return "No memories match these filters. Choose another view." }
+        return "No notes yet. Tap Remember to begin."
+    }
+
+    private var searchControls: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 8) { searchField.frame(minWidth: 180); modePicker.fixedSize(horizontal: true, vertical: false) }
+            VStack(alignment: .leading, spacing: 8) { searchField; modePicker }
+        }
+    }
+
+    private var searchField: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass").foregroundStyle(KairosStyle.secondaryInk).accessibilityHidden(true)
+            TextField(mode == .id ? "Paste a note ID" : "Search your journal", text: $searchText,
+                      prompt: Text(mode == .id ? "Paste a note ID" : "Search your journal").foregroundColor(KairosStyle.secondaryInk))
+                .focused($searching).textInputAutocapitalization(.never).autocorrectionDisabled()
+                .keyboardType(mode == .id ? .asciiCapable : .default).submitLabel(.search)
+                .onSubmit { searching = false; refresh += 1 }
+                .accessibilityLabel("Search your journal")
+                .accessibilityHint(mode.hint).accessibilityIdentifier("journal-search")
+            if !searchText.isEmpty {
+                Button { searchText = "" } label: { Image(systemName: "xmark.circle.fill") }
+                    .frame(minWidth: 44, minHeight: 44).buttonStyle(.borderless)
+                    .accessibilityLabel("Clear search").accessibilityIdentifier("clear-search")
+            }
+        }
+        .padding(.horizontal, 12).frame(minHeight: 44)
+        .background(KairosStyle.surface, in: RoundedRectangle(cornerRadius: 12))
+        .overlay { RoundedRectangle(cornerRadius: 12).stroke(KairosStyle.outline, lineWidth: 1) }
+    }
+
+    private var modePicker: some View {
+        Menu {
+            Picker("Search mode", selection: $mode) {
+                ForEach(JournalSearchMode.allCases) { Text($0.title).tag($0) }
+            }
+        } label: {
+            HStack(spacing: 8) { Text(mode.title); Image(systemName: "chevron.down").imageScale(.small) }
+        }
+        .buttonStyle(KairosActionStyle()).accessibilityLabel("Search mode, \(mode.title)")
+        .accessibilityIdentifier("search-mode")
     }
 
     private var actions: some View {
         ViewThatFits(in: .horizontal) {
-            HStack(spacing: 8) { rememberAction; connectAction; ownerAction }
-                .fixedSize(horizontal: true, vertical: false)
+            HStack(spacing: 8) { rememberAction; connectAction; ownerAction }.fixedSize(horizontal: true, vertical: false)
             VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 8) { rememberAction; connectAction }
-                    .fixedSize(horizontal: true, vertical: false)
+                HStack(spacing: 8) { rememberAction; connectAction }.fixedSize(horizontal: true, vertical: false)
                 ownerAction
             }
             VStack(alignment: .leading, spacing: 8) { rememberAction; connectAction; ownerAction }
-        }
-        .padding(.horizontal, 16).padding(.vertical, 10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(KairosStyle.background)
-        .overlay(alignment: .bottom) { Divider() }
+        }.frame(maxWidth: .infinity, alignment: .leading)
     }
-
     private var rememberAction: some View {
-        Button("Remember") { composing = true }
-            .buttonStyle(KairosActionStyle(primary: true))
-            .disabled(model.busy || model.journal?.deleted == true)
+        Button("Remember") { searching = false; composing = true }
+            .buttonStyle(KairosActionStyle(primary: true)).disabled(model.busy || model.journal?.deleted == true)
             .accessibilityIdentifier("remember-action")
     }
     private var connectAction: some View {
-        NavigationLink("Connect") { ConnectionsView() }
-            .buttonStyle(KairosActionStyle()).accessibilityIdentifier("connections-action")
+        NavigationLink("Connect") { ConnectionsView() }.buttonStyle(KairosActionStyle()).accessibilityIdentifier("connections-action")
     }
     private var ownerAction: some View {
-        NavigationLink("Your journal") { ControlsView() }
-            .buttonStyle(KairosActionStyle()).accessibilityIdentifier("owner-controls-action")
+        NavigationLink("Your journal") { ControlsView() }.buttonStyle(KairosActionStyle()).accessibilityIdentifier("owner-controls-action")
     }
 }
 
@@ -277,6 +327,9 @@ private struct MemoryRow: View {
             }
         }
         .padding(.vertical, 10)
+        .contextMenu {
+            Button("Copy note ID") { UIPasteboard.general.string = entry.id }
+        }
         .accessibilityElement(children: .contain)
     }
 }

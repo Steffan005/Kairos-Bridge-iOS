@@ -20,6 +20,7 @@ protocol KairosServing {
     func forgetSession() throws
     func signIn(email: String, password: String) async throws
     func journal() async throws -> JournalEnvelope
+    func search(_ query: JournalQuery, cursor: String?) async throws -> JournalSearchPage
     func saveNote(text: String, project: String) async throws
     func disconnect() async throws
     func deleteJournal() async throws
@@ -30,6 +31,9 @@ protocol KairosServing {
 
 extension KairosServing {
     var sessionStorageWarning: String? { nil }
+    func search(_ query: JournalQuery, cursor: String?) async throws -> JournalSearchPage {
+        throw KairosFailure.service(503, "Journal search is unavailable. Please try again.")
+    }
 }
 
 @MainActor
@@ -82,6 +86,24 @@ final class KairosAPI: KairosServing {
 
     func journal() async throws -> JournalEnvelope {
         try JSONDecoder().decode(JournalEnvelope.self, from: await request("/api/journal"))
+    }
+
+    func search(_ query: JournalQuery, cursor: String? = nil) async throws -> JournalSearchPage {
+        var components = URLComponents()
+        components.path = "/api/journal/search"
+        components.queryItems = [
+            .init(name: "q", value: query.normalizedText),
+            .init(name: "mode", value: query.mode.rawValue),
+            .init(name: "limit", value: "15")
+        ]
+        if !query.project.isEmpty { components.queryItems?.append(.init(name: "project", value: query.project)) }
+        if !query.author.isEmpty { components.queryItems?.append(.init(name: "author", value: query.author)) }
+        if let cursor { components.queryItems?.append(.init(name: "cursor", value: cursor)) }
+        // URLComponents permits literal '+', but the server's URLSearchParams
+        // decodes it as a space. Preserve literal plus signs in every value.
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        guard let path = components.string else { throw KairosFailure.invalidResponse }
+        return try JSONDecoder().decode(JournalSearchPage.self, from: await request(path))
     }
 
     func saveNote(text: String, project: String) async throws {

@@ -25,8 +25,54 @@ struct ApprovedConnection: Decodable {
     let scopes: [String]
 }
 
-// Shared by the native list and its checks. This is a display window over
-// already-loaded records, never an assertion of full-history retrieval.
+enum JournalSearchMode: String, CaseIterable, Identifiable, Codable {
+    case words, exact, id
+    var id: String { rawValue }
+    var title: String { ["words": "Words", "exact": "Exact phrase", "id": "Note ID"][rawValue]! }
+    var hint: String {
+        switch self {
+        case .words: return "Find matching words, newest first."
+        case .exact: return "Find these words together, in this order."
+        case .id: return "Open a specific memory using its 16-character note ID."
+        }
+    }
+}
+
+struct JournalQuery: Equatable, Hashable {
+    var text = ""
+    var mode = JournalSearchMode.words
+    var project = ""
+    var author = ""
+    var normalizedText: String { text.trimmingCharacters(in: .whitespacesAndNewlines) }
+    var isSearch: Bool { !normalizedText.isEmpty }
+    var validationMessage: String? {
+        if normalizedText.count > 500 { return "Use a shorter search, up to 500 characters." }
+        if mode == .id && isSearch && normalizedText.range(of: "^[a-fA-F0-9]{16}$", options: .regularExpression) == nil {
+            return "Paste the complete 16-character note ID."
+        }
+        return nil
+    }
+}
+
+struct JournalSearchPage: Decodable {
+    let entries: [JournalEntry]
+    let next_cursor: String?
+    let matched_mode: String
+    let total: Int
+    let snapshot_seq: Int
+    let projects: [String]
+    let authors: [String]
+}
+
+struct JournalRequest: Hashable {
+    let query: JournalQuery
+    let owner: String
+    let refresh: Int
+    let deleted: Bool
+}
+
+// Historical build 3/4 display-window helper, retained for its fixture checks.
+// Build 5 uses JournalSearchModel and server-backed full-history pages.
 struct JournalWindow {
     static let pageSize = 15
     private(set) var visibleCount = pageSize

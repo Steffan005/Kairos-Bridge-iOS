@@ -183,6 +183,8 @@ final class KairosModel: ObservableObject {
         message = withSessionWarning(message)
     }
 
+    func searchSessionExpired(_ error: Error) { handle(error) }
+
     var claudeURL: URL {
         var components = URLComponents(string: "https://claude.ai/customize/connectors")!
         if journal?.claudeApproved != true {

@@ -50,7 +50,7 @@ for name, debug in [("Debug", True), ("Release", False)]:
             SWIFT_OPTIMIZATION_LEVEL = {"\"-Onone\"" if debug else '"-O"'};
             SWIFT_ACTIVE_COMPILATION_CONDITIONS = {"DEBUG" if debug else '""'}; }};'''))
     objects.append(item("target-" + name, f'''isa = XCBuildConfiguration; name = {name}; baseConfigurationReference = {ident("file-config")}; buildSettings = {{
-            CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 4; MARKETING_VERSION = 0.1.0;
+            CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 5; MARKETING_VERSION = 0.1.0;
             PRODUCT_NAME = "$(TARGET_NAME)";
             GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = Kairos;
             ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;

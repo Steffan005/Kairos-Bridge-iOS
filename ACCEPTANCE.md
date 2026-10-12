@@ -215,3 +215,15 @@ The owner was asked to Update/Open version 0.1.0 (4) on the iPhone, confirm exis
 The owner responded to the requested TestFlight version 0.1.0 (4) Update/Open/color check: “Updated. LOOKS GREAT GPT! This is EXACTLY how it's supposed to be.” This records physical update and accepted appearance by operator report. No phone screenshot, exact rendered count, maximum physical text-size check or separate interaction trace for each selector/control accompanied that response; the scoped Simulator captures and checks remain separate.
 
 The palette correction is accepted. Search remains on explicit hold while its proposal is reviewed. Approved AI connections were left unchanged, and no new note/reconnection was requested in the phone check. This does not expand invited-beta status into public App Store readiness.
+
+## October 12 — first whole-journal search candidate
+
+Steffan authorized Words, literal Exact phrase and exact Note ID, lifting the earlier hold only for this slice. Root owns native UI/release; a Codex worker implemented the engine/owner route and independently reviewed the native contract. The worker found literal plus signs incorrectly decoded as spaces and a missing reload after journal recreation; both were repaired and covered by executable fixtures. Paging now preserves its original refresh time.
+
+- Deployed hosted executable: `235b48e0e8016f053f25440fb82fd9516c8df4b2`. Source discovery matched; independent owner calls reached 59/59 snapshot records in four pages, preserving all signed fields. Existing Claude/ChatGPT/Grok approvals stayed intact. Unauthenticated reads returned 401 and query-changed cursors returned 400.
+- Synthetic checks: engine 42, hosted 56, native existing model 33, existing API 26, new search 27. Native search fixtures use synthetic data and injected API callbacks; they do not access the owner's real journal.
+- Actual native Simulator: Words `cabinet brass`, Exact phrase `kitchen cabinet handles are brass.`, and uppercase exact ID `1D136DF2B6F1B0BA` recovered the older source-dated brass-handles record beyond the previous preview. Maximum text size 11 was inspected in light/dark appearance; the search label and mode remain readable. Original text size 3 and light appearance were restored.
+- Device Hub scroll actions intermittently moved the list, but input then failed; Steffan reported manual scrolling also failed. Full-history Show more screen taps are **pending**, even though API paging and compiled native model paging pass. This is neither a passed native paging check nor proof of an app scrolling defect.
+- Build 5 remains unuploaded at this checkpoint. Build 4 is the accepted owner TestFlight build. Physical search/paging acceptance, an independent tester, production-scale performance, semantic search and public release remain open.
+
+Private receipts remain outside Git under KAIROS_PRODUCT_PLAN/receipts/2026-10-12-search. No credentials, owner exports or journal text are committed.

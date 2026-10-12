@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 
 root = Path(__file__).resolve().parents[1]
-sources = ["Models.swift", "SessionVault.swift", "KairosAPI.swift", "KairosModel.swift"]
+sources = ["Models.swift", "SessionVault.swift", "KairosAPI.swift", "KairosModel.swift", "JournalSearchModel.swift"]
 with tempfile.TemporaryDirectory(prefix="kairos-api-response-checks-") as directory:
     binary = Path(directory) / "api-response-checks"
     subprocess.run(["swiftc", "-swift-version", "5",
