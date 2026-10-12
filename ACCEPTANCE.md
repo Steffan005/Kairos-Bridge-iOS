@@ -227,3 +227,11 @@ Steffan authorized Words, literal Exact phrase and exact Note ID, lifting the ea
 - Build 5 remains unuploaded at this checkpoint. Build 4 is the accepted owner TestFlight build. Physical search/paging acceptance, an independent tester, production-scale performance, semantic search and public release remain open.
 
 Private receipts remain outside Git under KAIROS_PRODUCT_PLAN/receipts/2026-10-12-search. No credentials, owner exports or journal text are committed.
+
+## October 12 — exact build 5 archive, export and upload
+
+Exact clean/pushed native source `349d4f1f42c8d79ce985b14e9ccca71d3be587ae` archived as **0.1.0 (5)** after the operator approved Apple's keychain signing prompt. Strict archive and exported-package signatures passed. The exported App Store profile has `beta-reports-active=true`, `get-task-allow=false`, no device list and no enterprise all-device grant.
+
+Xcode acknowledged **Upload succeeded** at **2026-10-12T21:30:05.882Z** and processing start. Upload re-exports the verified archive and may resign its bytes; the exported IPA hash identifies the checked local package. Processing completion, assignment to the existing owner group and a physical search/Show more check are pending. Apple's refreshed page became blank in Safari and Chrome; operator assistance was requested to restore it. No App Store Connect API key, new tester, grant or public submission was created.
+
+The final Simulator source again retrieved the old brass-handles note through all three modes. Exact Project/Author filtering remains intact. A final read-only Codex source review found no actionable defect; that review did not run another test or create data. Native Show more screen taps remain unverified, despite passing full-history API and synthetic model checks.
