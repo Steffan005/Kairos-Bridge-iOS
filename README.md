@@ -93,3 +93,7 @@ The signed Simulator SDK target passed and the repaired app installed/launched, 
 Repaired source `b5df0ee312c02cf2fa046a4e8354ac6ff02b71d1` archived and exported as **0.1.0 build 2**. Strict signature verification and the App Store beta profile checks passed. Apple acknowledged upload success and processing start at **2026-10-12T00:04:58Z** (October 11 evening ET), using the existing Xcode account; no API key was used. The earlier package from `0bb4d79` was superseded and never uploaded.
 
 Processing completion, assignment to Kairos Owner Pilot and physical build-2 install/failure acceptance are still unverified. The physical results above remain build 1. Grok received the 7:30 PM review request; no fresh reply was captured. The focused local review found and repaired the defects described above. This is invited synthetic staging, not public release.
+
+### Build2 processing and group assignment
+
+The operator's October11 8:31PM ET App Store Connect screenshot shows **0.1.0 build2, Ready to Submit**, the existing Kairos Owner Pilot group badge, one invite and one install. Build1 remains listed. This establishes processing/group assignment by screenshot. The aggregate install metric does not establish the current owner-phone version or updated behavior; that physical confirmation is next. No new note or provider reauthorization is requested during the version/open check.
