@@ -128,3 +128,9 @@ Focused failing fixtures reproduced expiry erasing an unsent draft and an ambigu
 Save outcomes from transport/cancellation, invalid responses, 408 and 5xx remain unconfirmed. Later reads retain the warning, and mutations are not automatically retried. Known validation rejection remains distinct. Thirty-three synthetic model checks and twenty-six actual-API callback checks passed, including simulated commit followed by 503 or a dropped reply. These are injected macOS faults, not physical iPhone/Keychain faults.
 
 The signed Simulator SDK target passed and the repaired app installed/launched, restored the existing session and retrieved the exact amber note with its actor/date/project and fresh timestamp. No new native save or native-UI fault injection is claimed for this revision. The previous build-2 package remains superseded; a fresh exact archive is required. Physical TestFlight remains build 1.
+
+### Second invited beta upload
+
+Repaired source `b5df0ee312c02cf2fa046a4e8354ac6ff02b71d1` archived and exported as **0.1.0 build 2**. Strict signature verification and the App Store beta profile checks passed. Apple acknowledged upload success and processing start at **2026-10-12T00:04:58Z** (October 11 evening ET), using the existing Xcode account; no API key was used. The earlier package from `0bb4d79` was superseded and never uploaded.
+
+Processing completion, assignment to Kairos Owner Pilot and physical build-2 install/failure acceptance are still unverified. The physical results above remain build 1. Grok received the 7:30 PM review request; no fresh reply was captured. The focused local review found and repaired the defects described above. This is invited synthetic staging, not public release.
