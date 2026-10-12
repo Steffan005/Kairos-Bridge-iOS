@@ -2,7 +2,9 @@
 
 Native SwiftUI companion to the existing Kairos Journal service. Created by Steffan Douglas Haskins.
 
-Status: on October 11, 2026, signed archive, export, upload and processing passed for version 0.1.0, build 1. The operator installed Kairos-Bridge through Apple's TestFlight invitation and opened its journal. A new tagged native note was retrieved in a fresh actual Claude iPhone chat, which saved a reply. An independent owner API read confirmed both exact records; the operator confirmed the reply remained visible after native refresh/full close/reopen. Native Sign out preserved approved Claude access. Native Disconnect removed every approved connection while retaining all eight notes, independently confirmed through the owner API. The actual native export reached Files and matched all eight records. Offline Refresh reported failure, then the app refreshed automatically when connectivity returned. See [ACCEPTANCE.md](ACCEPTANCE.md) for evidence and remaining gates. Other physical failure checks, clean onboarding, customer signup/recovery and retention remain unfinished.
+Current status, October12, 2026: the owner updated through TestFlight to **0.1.0 build2**, compiled from `b5df0ee312c02cf2fa046a4e8354ac6ff02b71d1`, and reported all existing notes intact. Actual Claude, ChatGPT and Grok iPhone conversations now read/write the same owner journal. ChatGPT and Grok records were independently matched to the hosted owner API and the owner confirmed both visible in native Kairos. Grok setup was completed through iPhone Safari; the native app's existing guided connection screen still targets Claude. Updated-build failure cases, independent onboarding and customer signup/recovery/retention remain open. These are invited-owner results, not a public App Store release. [ACCEPTANCE.md](ACCEPTANCE.md) preserves chronology and evidence.
+
+Historical build1 acceptance: on October11, signed archive, export, upload and processing passed for version0.1.0 build1. The owner installed through TestFlight and completed a native/Claude round trip with refresh/full close/reopen. Native Sign out preserved approved Claude access; native Disconnect removed approvals while retaining eight notes. Export reached Files and matched all eight records. Offline Refresh retained displayed notes and online recovery refreshed automatically. Historical source sections below preserve earlier preparation/repair states; they do not override the current status above.
 
 ## Scope
 
@@ -54,7 +56,7 @@ The included original beta icon is an opaque 1024-pixel PNG compiled through `As
 6. Use a clean provider account and independent tester for guided setup.
 7. Complete physical TestFlight owner-control/failure checks before release automation or a wider pilot. Invitation/install and native/provider read-write/reopen have passed on one invited account with an existing approved connector.
 
-The earlier hosted and synthetic SDK checks remain separate evidence. The physical native/Claude read-write result now establishes this client path on one invited account, not clean customer onboarding or support for other providers.
+The earlier hosted and synthetic SDK checks remain separate evidence. Physical native display and actual Claude/ChatGPT/Grok phone read/write establish the recorded paths on one invited account. Independent customer onboarding remains open; support is limited to the tested clients and setup paths.
 
 ## Preliminary model checks
 
@@ -97,3 +99,9 @@ Processing completion, assignment to Kairos Owner Pilot and physical build-2 ins
 ### Build2 processing and group assignment
 
 The operator's October11 8:31PM ET App Store Connect screenshot shows **0.1.0 build2, Ready to Submit**, the existing Kairos Owner Pilot group badge, one invite and one install. Build1 remains listed. This establishes processing/group assignment by screenshot. The aggregate install metric does not establish the current owner-phone version or updated behavior; that physical confirmation is next. No new note or provider reauthorization is requested during the version/open check.
+
+### Superseding build2 owner update and shared-provider milestone
+
+The owner subsequently reported TestFlight's Update prompt, opening build2 and all existing notes retained. October12 actual ChatGPT phone note `534e5fc17915cd3a` and Grok phone note `c5bbceab828402c9` were independently matched to the same hosted journal, and the owner refreshed native Kairos and explicitly confirmed both visible. Another fresh Grok phone conversation recovered its write without reconnecting. A separate Mac Grok web-app conversation displayed an actual matching connector request/result.
+
+Native/provider shared-journal acceptance now includes Claude, ChatGPT and Grok on the owner's iPhone. No native executable change, new build or TestFlight upload was needed for those added provider connections. The33 model/26 API callback fixtures are earlier synthetic evidence; physical ambiguous-write/session-expiry cases remain untested. Grok-specific native Sign out/Disconnect and an independent tester remain open.

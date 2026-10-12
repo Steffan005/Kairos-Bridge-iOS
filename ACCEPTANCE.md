@@ -1,6 +1,14 @@
-# Native Kairos acceptance — October 11, 2026
+# Native Kairos acceptance — October 11–12, 2026
 
 Actor: ChatGPT / gpt_codex. Scope: Kairos native iPhone client.
+
+## Current checkpoint — October12 morning ET
+
+The owner reported updating through TestFlight to0.1.0 build2 and opening with all existing notes intact. Compiled source remains `b5df0ee312c02cf2fa046a4e8354ac6ff02b71d1`; later documentation commits do not identify a new installed binary.
+
+Actual Claude, ChatGPT and Grok iPhone read/write paths now reach the same invited owner journal. ChatGPT note `534e5fc17915cd3a` and Grok note `c5bbceab828402c9` were independently matched exactly once to the owner API. The owner refreshed native Kairos and explicitly confirmed both visible. Grok also passed another fresh phone conversation retrieval without writing/reconnecting; its setup was completed in iPhone Safari. A separate new Mac Grok web-app conversation displayed an actual `journal_continue` tool request/result matching its phone note.
+
+The native app currently guides Claude setup; ChatGPT and Grok were connected separately through their provider interfaces. Updated-build physical failure checks, Grok-specific native Sign out/Disconnect, independent onboarding and production recovery/retention remain open. Earlier sections below are chronological evidence, not assertions of the current release frontier.
 
 ## Environment and build
 
@@ -138,3 +146,13 @@ Processing completion, assignment to Kairos Owner Pilot and physical build-2 ins
 ### Build2 processing and group assignment
 
 The operator's October11 8:31PM ET App Store Connect screenshot shows **0.1.0 build2, Ready to Submit**, the existing Kairos Owner Pilot group badge, one invite and one install. Build1 remains listed. This establishes processing/group assignment by screenshot. The aggregate install metric does not establish the current owner-phone version or updated behavior; that physical confirmation is next. No new note or provider reauthorization is requested during the version/open check.
+
+### Superseding actual build2 update and provider display
+
+Steffan reported TestFlight offered Update, then the updated app opened to all existing notes. This completes the owner build2 install/open/preservation slice by operator report. No physical fault-injection result follows from a successful normal open.
+
+- NEW ChatGPT iPhone conversation saved and read back the east-facing-window note, ID `534e5fc17915cd3a`, timestamp `2026-10-12T13:11:54.893Z`, actor `chatgpt`, tag `project-kitchen`. Independent owner API confirmed exactly one match; Steffan refreshed native Kairos and confirmed visible.
+- After Safari-created Grok approval on that same journal, NEW Grok iPhone conversation retrieved the ChatGPT note, saved/read back the linen-curtains note, ID `c5bbceab828402c9`, timestamp `2026-10-12T14:47:57.544Z`, actor `grok`, tag `project-kitchen`. Independent owner API confirmed exactly one match and unchanged baseline records. Steffan explicitly confirmed native display after refresh.
+- ANOTHER new Grok iPhone chat retrieved the same Grok note without writing/reconnecting. A separately initiated Mac Grok web-app chat displayed its actual connector request, `journal_continue(project:kitchen,limit:1)`, and matching result. A generic web search was also visible before that connector call.
+
+Phone actions and native display are operator reports matched independently to stored records; the Mac connector card was directly observed. No raw phone tool trace was captured. All three approved providers remain connected. This update adds evidence and documentation, with no native code/build change or public App Store submission.
