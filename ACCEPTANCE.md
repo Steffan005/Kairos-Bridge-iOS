@@ -209,3 +209,9 @@ Existing Xcode account upload returned exit 0, Upload succeeded and EXPORT SUCCE
 Actual Apple upload queue showed build 4 Complete. The existing Kairos Owner Pilot Add Build dialog showed **4 Ready to Test**. ChatGPT selected only 4 and completed Add. The actual group screen then showed **1 tester, 4 builds and 0.1.0 (4) Testing**, with builds 1–3 retained. Full screenshot and accessibility receipts are saved outside the public repository. This is an observed assignment, not a successful-click assumption.
 
 The owner was asked to Update/Open version 0.1.0 (4) on the iPhone, confirm existing notes and selectors, and send the dark journal screenshot. That physical result is pending. No new write test or provider reauthorization was requested. Search remains on explicit hold, and the hosted executable is unchanged.
+
+### Build 4 operator phone acceptance
+
+The owner responded to the requested TestFlight version 0.1.0 (4) Update/Open/color check: “Updated. LOOKS GREAT GPT! This is EXACTLY how it's supposed to be.” This records physical update and accepted appearance by operator report. No phone screenshot, exact rendered count, maximum physical text-size check or separate interaction trace for each selector/control accompanied that response; the scoped Simulator captures and checks remain separate.
+
+The palette correction is accepted. Search remains on explicit hold while its proposal is reviewed. Approved AI connections were left unchanged, and no new note/reconnection was requested in the phone check. This does not expand invited-beta status into public App Store readiness.
