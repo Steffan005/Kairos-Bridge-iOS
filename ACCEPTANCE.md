@@ -235,3 +235,9 @@ Exact clean/pushed native source `349d4f1f42c8d79ce985b14e9ccca71d3be587ae` arch
 Xcode acknowledged **Upload succeeded** at **2026-10-12T21:30:05.882Z** and processing start. Upload re-exports the verified archive and may resign its bytes; the exported IPA hash identifies the checked local package. Processing completion, assignment to the existing owner group and a physical search/Show more check are pending. Apple's refreshed page became blank in Safari and Chrome; operator assistance was requested to restore it. No App Store Connect API key, new tester, grant or public submission was created.
 
 The final Simulator source again retrieved the old brass-handles note through all three modes. Exact Project/Author filtering remains intact. A final read-only Codex source review found no actionable defect; that review did not run another test or create data. Native Show more screen taps remain unverified, despite passing full-history API and synthetic model checks.
+
+## October 12 — build 5 processed and Testing in the existing owner group
+
+Steffan restored the working Chrome App Store Connect tab and reported inviting build 5 to Kairos Owner Pilot. Root independently observed **0.1.0 (5), Testing** in that group, with one tester and five builds; the full screenshot and accessibility state were saved privately. No duplicate assignment action, new tester or new group was created. The tester screen still displayed installed build 4; that metric does not establish a build 5 phone update.
+
+The pending physical request is TestFlight Update/Open on 0.1.0 (5), retrieve an older note through Words, literal Exact phrase and uppercase exact Note ID, then clear the search and use Show more. No note write or provider reconnection is requested. Build 4 remains the accepted phone evidence until the owner supplies the new result. Compiled source stays `349d4f1f42c8d79ce985b14e9ccca71d3be587ae`; subsequent documentation commits do not identify a new binary.
