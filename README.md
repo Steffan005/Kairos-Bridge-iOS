@@ -4,13 +4,23 @@ Native SwiftUI companion to the existing Kairos Journal service. Created by Stef
 
 Current status, October12, 2026: the owner updated through TestFlight to **0.1.0 build2**, compiled from `b5df0ee312c02cf2fa046a4e8354ac6ff02b71d1`, and reported all existing notes intact. Actual Claude, ChatGPT and Grok iPhone conversations now read/write the same owner journal. ChatGPT and Grok records were independently matched to the hosted owner API and the owner confirmed both visible in native Kairos. Grok setup was completed through iPhone Safari; the native app's existing guided connection screen still targets Claude. Updated-build failure cases, independent onboarding and customer signup/recovery/retention remain open. These are invited-owner results, not a public App Store release. [ACCEPTANCE.md](ACCEPTANCE.md) preserves chronology and evidence.
 
+### Anamnesis UI increment — October12
+
+Steffan authorized implementation after Grok's design handoff. Current development source prepares **0.1.0 build3**: Aegean/ivory/decorative bronze, Anamnesis heading/bridge mark, fixed labeled Remember/Connect/Your journal actions,15 initially visible memories and **Show more** in groups of15. Project/author views filter the already-loaded set before display pagination. The owner API remains capped at50; the UI exposes loaded/total counts and does not offer a fake full-history fetch.
+
+The connection screen now represents Claude, ChatGPT and Grok read/write approval scopes using exact client identities. Browser links open provider settings; they do not guarantee one-click onboarding or enabled tools in a new chat. Compose offers existing recent project labels; arbitrary exact display-name storage and a complete project catalog are deferred. Save/auth/owner-control logic is preserved except the recovered-draft action label.
+
+Unsigned Simulator SDK compilation and ad hoc signed Simulator build passed. The updated app opened with its existing disposable session/journal; current home author/date/project labels and provider screen were directly observed. A full-resolution home capture from Device Hub was reviewed; the initial oversized header was compacted and the revision rebuilt/opened. No new notes, approvals or deletion were made for this UI review. Automated model/API suites were not rerun for this increment. Larger-text/narrow-width rendered acceptance, Show more on a journal exceeding15 notes and physical build3 acceptance remain pending. **Build3 has not been archived, uploaded or installed through TestFlight. Installed owner beta remains0.1.0(2).**
+
+[Reviewed design handoff](DESIGN_HANDOFF_2026-10-12.md) records scope and the full-history/project-catalog dependencies.
+
 Historical build1 acceptance: on October11, signed archive, export, upload and processing passed for version0.1.0 build1. The owner installed through TestFlight and completed a native/Claude round trip with refresh/full close/reopen. Native Sign out preserved approved Claude access; native Disconnect removed approvals while retaining eight notes. Export reached Files and matched all eight records. Offline Refresh retained displayed notes and online recovery refreshed automatically. Historical source sections below preserve earlier preparation/repair states; they do not override the current status above.
 
 ## Scope
 
 - Native sign-in, journal, dated/attributed notes and compose controls.
 - Device-bound Keychain sessions; no password saved by the app; ephemeral HTTP transport, fixed HTTPS origin and refused redirects.
-- Guided Claude setup in the system browser, with a Copy connection address fallback. App, browser and Claude sessions are separate. Approval is not proof the connector is enabled in the current chat.
+- Provider approval views for Claude, ChatGPT and Grok, with guided Claude setup in the system browser and a Copy connection address fallback. App, browser and Claude sessions are separate. Approval is not proof the connector is enabled in the current chat.
 - Owner export/share, explicit Disconnect, sign-out and confirmed active-journal deletion with the actual retention notice.
 - Visible stale/offline/error states. Drafts survive view dismissal in memory, not app termination. No automatic note retry or idempotent-write guarantee.
 

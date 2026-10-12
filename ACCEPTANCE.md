@@ -156,3 +156,14 @@ Steffan reported TestFlight offered Update, then the updated app opened to all e
 - ANOTHER new Grok iPhone chat retrieved the same Grok note without writing/reconnecting. A separately initiated Mac Grok web-app chat displayed its actual connector request, `journal_continue(project:kitchen,limit:1)`, and matching result. A generic web search was also visible before that connector call.
 
 Phone actions and native display are operator reports matched independently to stored records; the Mac connector card was directly observed. No raw phone tool trace was captured. All three approved providers remain connected. This update adds evidence and documentation, with no native code/build change or public App Store submission.
+
+
+## Anamnesis UI implementation — October12,2026
+
+- Operator authorized implementation after the Grok proposal/revision. ChatGPT owns native changes.
+- Source prepares0.1.0 build3; first15 notes, Show more increments15, fixed accessible labeled controls, honest loaded-set project/author views, recent project chooser, exact three-provider scope status and Greek palette/heading/bridge motif.
+- Generic unsigned and Simulator ad hoc signed SDK builds passed. Updated app restored its disposable session, displayed existing notes and current home metadata. Connect navigation showed all three provider sections with correct unapproved state for that separate Simulator account. No phone-owner approvals changed.
+- Actual Device Hub capture showed excess header height; the header was compacted, rebuilt and recaptured. Current native preview is evidenced separately in the private product-plan receipts.
+- No new notes or grants/deletion were created by this UI review; no automated suites were added or rerun. Existing33model/26API fixtures remain historical.
+- Pending: rendered narrow/large-text acceptance, Show more interaction on >15existing notes, filter/compose/owner controls on the new physical build, archive/export/upload/group assignment and independent tester.
+- Owner TestFlight remains0.1.0(2), not this development candidate. Hosted executable remainsf7467b1. Full-history queries and durable exact project names/catalogs remain separate increments.

@@ -25,6 +25,26 @@ struct ApprovedConnection: Decodable {
     let scopes: [String]
 }
 
+enum JournalProvider: String, CaseIterable, Identifiable {
+    case claude, chatgpt, grok
+    var id: String { rawValue }
+    var name: String { ["claude": "Claude", "chatgpt": "ChatGPT", "grok": "Grok"][rawValue]! }
+    var clientID: String {
+        switch self {
+        case .claude: return "https://claude.ai/oauth/mcp-oauth-client-metadata"
+        case .chatgpt: return "https://chatgpt.com/oauth/client.json"
+        case .grok: return "https://grok.com/oauth/mcp-client.json"
+        }
+    }
+    var settingsURL: URL {
+        switch self {
+        case .claude: return URL(string: "https://claude.ai/customize/connectors")!
+        case .chatgpt: return URL(string: "https://chatgpt.com/plugins")!
+        case .grok: return URL(string: "https://grok.com/connectors")!
+        }
+    }
+}
+
 struct JournalEnvelope: Decodable {
     let deleted: Bool
     let entries: [JournalEntry]
@@ -32,7 +52,11 @@ struct JournalEnvelope: Decodable {
     let count: Int?
 
     var claudeApproved: Bool {
-        connections.contains { $0.clientId == "https://claude.ai/oauth/mcp-oauth-client-metadata" }
+        approval(for: .claude) != nil
+    }
+
+    func approval(for provider: JournalProvider) -> ApprovedConnection? {
+        connections.first { $0.clientId == provider.clientID && $0.scopes.contains("journal:read") }
     }
 }
 

@@ -46,7 +46,7 @@ final class KairosModel: ObservableObject {
             let recoveredDraft = recoverHeldDraft(for: self.email)
             try await fetch()
             if recoveredDraft {
-                message = withSessionWarning(unconfirmedSave ? unconfirmedSaveMessage : "Your unsent draft is recovered. Open Remember something to continue it.")
+                message = withSessionWarning(unconfirmedSave ? unconfirmedSaveMessage : "Your unsent draft is recovered. Open Remember to continue it.")
             }
             return true
         } catch { handle(error); return false }
