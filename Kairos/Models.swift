@@ -25,6 +25,31 @@ struct ApprovedConnection: Decodable {
     let scopes: [String]
 }
 
+// Shared by the native list and its checks. This is a display window over
+// already-loaded records, never an assertion of full-history retrieval.
+struct JournalWindow {
+    static let pageSize = 15
+    private(set) var visibleCount = pageSize
+
+    func matching(_ entries: [JournalEntry], project: String, author: String) -> [JournalEntry] {
+        entries.filter {
+            (project.isEmpty || $0.tags.contains(project))
+                && (author.isEmpty || $0.actor == author)
+        }
+    }
+
+    func visible(_ matching: [JournalEntry]) -> [JournalEntry] {
+        Array(matching.prefix(visibleCount))
+    }
+
+    mutating func showMore(matchingCount: Int) {
+        guard matchingCount > visibleCount else { return }
+        visibleCount = min(visibleCount + Self.pageSize, matchingCount)
+    }
+
+    mutating func reset() { visibleCount = Self.pageSize }
+}
+
 enum JournalProvider: String, CaseIterable, Identifiable {
     case claude, chatgpt, grok
     var id: String { rawValue }

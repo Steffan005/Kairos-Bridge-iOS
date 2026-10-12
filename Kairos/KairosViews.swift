@@ -117,8 +117,9 @@ struct SignInView: View {
 struct JournalView: View {
     @EnvironmentObject private var model: KairosModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var composing = false
-    @State private var visibleCount = 15
+    @State private var window = JournalWindow()
     @State private var selectedProject = ""
     @State private var selectedAuthor = ""
 
@@ -128,10 +129,7 @@ struct JournalView: View {
     }
     private var authors: [String] { Array(Set(loadedEntries.map(\.actor))).sorted() }
     private var matchingEntries: [JournalEntry] {
-        loadedEntries.filter {
-            (selectedProject.isEmpty || $0.tags.contains(selectedProject))
-                && (selectedAuthor.isEmpty || $0.actor == selectedAuthor)
-        }
+        window.matching(loadedEntries, project: selectedProject, author: selectedAuthor)
     }
 
     var body: some View {
@@ -139,9 +137,13 @@ struct JournalView: View {
             Section {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(alignment: .center, spacing: 12) {
-                        BridgeMark().stroke(KairosStyle.bronze, lineWidth: 2).frame(width: 42, height: 28).accessibilityHidden(true)
+                        if !dynamicTypeSize.isAccessibilitySize {
+                            BridgeMark().stroke(KairosStyle.bronze, lineWidth: 2).frame(width: 42, height: 28).accessibilityHidden(true)
+                        }
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Anamnesis").font(.system(.title, design: .serif).weight(.semibold)).foregroundStyle(KairosStyle.ink)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .layoutPriority(1)
                             Text("Your journal").font(.subheadline).foregroundStyle(KairosStyle.secondaryInk)
                         }
                     }
@@ -181,13 +183,13 @@ struct JournalView: View {
                              : "No matching notes in the loaded memories. Choose another view to see more.")
                             .foregroundStyle(KairosStyle.secondaryInk)
                     }
-                    ForEach(Array(matchingEntries.prefix(visibleCount))) { entry in
+                    ForEach(window.visible(matchingEntries)) { entry in
                         MemoryRow(entry: entry)
                     }
-                    if matchingEntries.count > visibleCount {
+                    if matchingEntries.count > window.visibleCount {
                         Button {
                             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
-                                visibleCount += 15
+                                window.showMore(matchingCount: matchingEntries.count)
                             }
                         } label: {
                             Label("Show more", systemImage: "chevron.down")
@@ -200,7 +202,7 @@ struct JournalView: View {
                 }
                 if model.loaded {
                     Section {
-                        Text("Showing \(min(visibleCount, matchingEntries.count)) of \(matchingEntries.count) loaded\(selectedProject.isEmpty && selectedAuthor.isEmpty ? "" : " matching") memories.")
+                        Text("Showing \(min(window.visibleCount, matchingEntries.count)) of \(matchingEntries.count) loaded\(selectedProject.isEmpty && selectedAuthor.isEmpty ? "" : " matching") memories.")
                         if let count = model.journal?.count {
                             Text("\(loadedEntries.count) notes loaded · \(count) notes in your journal.")
                             if count > loadedEntries.count {
@@ -221,8 +223,8 @@ struct JournalView: View {
         }
         .refreshable { await model.refresh() }
         .sheet(isPresented: $composing) { ComposeView() }
-        .onChange(of: selectedProject) { _, _ in visibleCount = 15 }
-        .onChange(of: selectedAuthor) { _, _ in visibleCount = 15 }
+        .onChange(of: selectedProject) { _, _ in window.reset() }
+        .onChange(of: selectedAuthor) { _, _ in window.reset() }
         .onChange(of: projects) { _, current in
             if !selectedProject.isEmpty && !current.contains(selectedProject) { selectedProject = "" }
         }

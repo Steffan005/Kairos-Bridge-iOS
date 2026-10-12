@@ -167,3 +167,13 @@ Phone actions and native display are operator reports matched independently to s
 - No new notes or grants/deletion were created by this UI review; no automated suites were added or rerun. Existing33model/26API fixtures remain historical.
 - Pending: rendered narrow/large-text acceptance, Show more interaction on >15existing notes, filter/compose/owner controls on the new physical build, archive/export/upload/group assignment and independent tester.
 - Owner TestFlight remains0.1.0(2), not this development candidate. Hosted executable remainsf7467b1. Full-history queries and durable exact project names/catalogs remain separate increments.
+
+### Build3 larger-text and Show more acceptance
+
+October12, ChatGPT checked the signed native Simulator candidate on iPhone17. Device Hub's maximum text size11 exposed a truncated Anamnesis heading. Hiding its decorative mark at accessibility sizes and permitting vertical text sizing fixed the heading. Full heading, wrapping note text and the fixed labeled controls were directly observed; the inspector was restored to original size3.
+
+The existing shared owner journal contained40 records. Actual native Show more taps changed the footer from15 of40 to30 of40 to40 of40. The oldest brass-handles note was visible, and the fixed Connect button opened the approved provider screen from the history footer. Project Kitchen plus Author Grok showed its one expected linen-curtains note; All projects plus Grok showed both loaded Grok records. Default filters were restored and the owner controls opened without activating export, sign-out, Disconnect or deletion.
+
+All33 model checks,26 actual-API callback/storage fixtures and22 display-window checks passed. `JournalWindowChecks.swift` compiles the actual list's display model against a private40-record snapshot, covering ordering, retained prefixes, no duplicate IDs, bounded reveal/reset and exact project/author combinations. It does not claim UI taps; those were inspected separately. The signed Simulator SDK build also passed. Two real progress checkpoints were stored in hosted Kairos and read back; the41-record chain verified. Those checkpoint writes are separate from the read-only UI inspection.
+
+This completes the scoped Simulator larger-text/reveal checks. Physical build3 update, rendered behavior and fresh provider retrieval remain pending. There is no claim of complete accessibility certification, customer onboarding, history beyond the owner API's50-record cap or a public App Store release.
