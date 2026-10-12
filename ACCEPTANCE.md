@@ -2,13 +2,13 @@
 
 Actor: ChatGPT / gpt_codex. Scope: Kairos native iPhone client.
 
-## Current checkpoint — October12 morning ET
+## Current checkpoint — October12 afternoon ET
 
-The owner reported updating through TestFlight to0.1.0 build2 and opening with all existing notes intact. Compiled source remains `b5df0ee312c02cf2fa046a4e8354ac6ff02b71d1`; later documentation commits do not identify a new installed binary.
+Apple processed0.1.0 build3 from `ac41d8eb8ae68e0ec7a238b4be41eaf29e50da6a`; ChatGPT assigned it to the existing Kairos Owner Pilot group and directly observed Testing. The owner followed the requested Update/Open/Show more check and reported existing notes visible and working controls. His screenshot shows the new layout and a fresh journal checkpoint, but most surfaces remained gray in dark mode. Palette acceptance was reopened. A separately read Apple tester metric still listedbuild2 at that moment; it is not independent build3 installation proof.
 
 Actual Claude, ChatGPT and Grok iPhone read/write paths now reach the same invited owner journal. ChatGPT note `534e5fc17915cd3a` and Grok note `c5bbceab828402c9` were independently matched exactly once to the owner API. The owner refreshed native Kairos and explicitly confirmed both visible. Grok also passed another fresh phone conversation retrieval without writing/reconnecting; its setup was completed in iPhone Safari. A separate new Mac Grok web-app conversation displayed an actual `journal_continue` tool request/result matching its phone note.
 
-The native app currently guides Claude setup; ChatGPT and Grok were connected separately through their provider interfaces. Updated-build physical failure checks, Grok-specific native Sign out/Disconnect, independent onboarding and production recovery/retention remain open. Earlier sections below are chronological evidence, not assertions of the current release frontier.
+The native connection screen represents all three approvals and opens their provider settings. Earlier setup occurred through actual provider interfaces. Physical fault checks, Grok-specific owner controls, independent onboarding and production recovery/retention remain open. Build4 is a scoped palette repair; its physical color acceptance is pending. Earlier sections below preserve chronology.
 
 ## Environment and build
 
@@ -183,3 +183,17 @@ This completes the scoped Simulator larger-text/reveal checks. Physical build3 u
 Exact source `ac41d8eb8ae68e0ec7a238b4be41eaf29e50da6a`, clean and remote-matched, archived/exported **0.1.0(3)** successfully. Strict archive and exported-app signatures passed. Exported beta profile has `beta-reports-active=true`, `get-task-allow=false`, no `ProvisionedDevices` list and no all-devices provisioning. Export IPA SHA256: `82ef0f276419c564f2b30e3c8dc23a9a9022a0b410699a76cb3a6c52ca66f515`.
 
 The Xcode upload operation used that archive and the existing account, returned exit0, `Upload succeeded` and `EXPORT SUCCEEDED` at **2026-10-12T17:58:25.196Z**. Apple reported processing. Upload acknowledgement does not establish processed status, group assignment or installation. Those gates remain pending; current owner phone remains0.1.0(2). No new Apple key or public review submission occurred. Receipt files remain in the private product plan, outside the public repository.
+
+### Superseding build3 processing, assignment and phone observation
+
+On October12, the restored Safari Apple session showed build3 Ready to Submit, then Ready to Test in the existing group's Add Build dialog. ChatGPT selected it and completed Add. The actual Kairos Owner Pilot screen showed1 tester/3 builds and0.1.0(3) Testing; older builds remained. This is directly observed assignment, not an attempted click or public review submission.
+
+The owner followed the requested TestFlight Update/Open/Show more step and reported all old notes visible and buttons working. His subsequent phone screenshot shows the Anamnesis heading, fixed buttons, selectors and the newly saved phone checkpoint. It also exposed generic dark-gray surfaces. Normal layout/display acceptance is recorded; color acceptance remains open for the next candidate. No note or Disconnect was requested during the phone check.
+
+### Build4 palette preparation
+
+Adaptive colors now explicitly cover both background and row surfaces, including all native forms. Dark mode uses Aegean blue/ivory/bronze; light mode retains warm ivory/deep blue. The operator explicitly likes the Project/Author selectors; their layout/behavior are retained.
+
+Actual signed Simulator build/reopen passed. Normal light and dark renders, and maximum text-size11 in both appearances, were inspected. The full Anamnesis title and fixed labeled controls remained readable. Declared text/background and control-outline pairs passed17 calculated contrast checks (minimum text6.41:1; tested outline3.84:1). This is scoped contrast/rendering evidence, not complete accessibility certification. All33 model,26 API and22 display-window checks passed on the existing40-record fixture; no new test notes were inserted.
+
+Build4 exact-source packaging/upload/assignment and physical color confirmation are pending. Compiled/installed build3 evidence remains separate. The hosted executable and existing AI approvals are unchanged.
