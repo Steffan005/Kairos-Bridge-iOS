@@ -7,3 +7,5 @@ Steffan selected the original black-and-gold bridge on October 14, 2026 after re
 `swift scripts/generate_icon.swift` packages that master into an opaque 1024 × 1024 sRGB PNG in the app icon catalog. It performs dimension/color-space conversion only, without cropping, redrawing, adding corners, or changing the composition. iOS applies its own icon mask. The master remains unchanged.
 
 The original concept prompt and other candidates are preserved in the owner's product plan. Native build 6 carries the selected icon; a source version alone does not establish TestFlight availability or phone installation.
+
+Build 6 subsequently appeared as Testing in the existing Kairos Owner Pilot. Steffan completed the requested phone update/open check and reported the new icon and retained notes, providing an iPhone Home Screen screenshot on October 14. That screenshot directly shows the gold bridge on black; update/open and note retention are owner-confirmed. See ACCEPTANCE.md for the dated receipt boundaries.

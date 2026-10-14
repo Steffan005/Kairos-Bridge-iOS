@@ -285,3 +285,10 @@ Xcode acknowledged **Upload succeeded** at **2026-10-14T15:27:08.071Z** and repo
 The owner restored Apple sign-in. The existing group initially contained five builds; its Add Build dialog showed build 6 Ready to Test. Codex selected only build 6 and clicked Add. The resulting Apple group screen independently showed **0.1.0 (6), Testing**, one tester and six builds, including the original gold bridge on black. The group’s earlier builds were retained; no new tester or group was created. Native Chrome control completed the assignment after the extension click timed out before dispatch.
 
 The full screenshot and accessibility state are preserved privately under KAIROS_PRODUCT_PLAN/receipts/2026-10-14-icon. The owner was asked to Update to 0.1.0 (6) through TestFlight, inspect the Home Screen icon, then open the app and confirm existing notes. Physical acceptance remains pending; no new note or AI reauthorization is requested. Compiled source remains c8ece3aff65d79a6644d401ab1db5364fa957100; this documentation change creates no binary.
+
+
+## October 14 — owner accepts build 6 icon/update
+
+In reply to the requested TestFlight 0.1.0 (6) Update, Home Screen icon and journal-open check, Steffan reported: “new icon, notes intact, update succeeded.” The supplied 12:19 PM iPhone Home Screen screenshot directly shows the selected original gold Greek bridge on black. The screenshot contains no build number or journal records; version update/open and retained notes are operator-reported. This closes the scoped owner icon/update check and makes build 6 the accepted owner beta.
+
+The source remains c8ece3aff65d79a6644d401ab1db5364fa957100. This acceptance documentation changes no executable and requests no further phone action. The screenshot and receipt remain private outside Git. A genuine checkpoint was saved/retrieved in hosted Kairos and mirrored through a fresh local MCP process. Existing holds on Gemini mobile/renewal and independent onboarding remain; image attachments are future work. This result does not establish new failure-mode, provider or public App Store acceptance.
