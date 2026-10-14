@@ -2,6 +2,8 @@
 
 Native SwiftUI companion to the existing Kairos Journal service. Created by Steffan Douglas Haskins.
 
+**October 14 icon update:** Build 6 is being prepared with the owner-selected black-and-gold Greek bridge. The original master is preserved and the app catalog contains its opaque 1024-pixel rendition. Runtime journal code is unchanged. Archive, upload, TestFlight assignment and physical icon confirmation remain pending; build 5 below is the last accepted owner beta.
+
 Current status, October 13, 2026: **0.1.0 build 5**, compiled from `349d4f1f42c8d79ce985b14e9ccca71d3be587ae`, is Testing in the existing Kairos Owner Pilot. The owner confirmed the requested TestFlight update, whole-journal Words/Exact phrase/Note ID searches, and Show more check worked. This is operator-reported acceptance of the specified steps; no separate phone screenshot, exact display count or per-control trace accompanied the reply. Signed archive/export/profile, Apple upload and group assignment are independently recorded. Actual Claude, ChatGPT, Grok and Gemini iPhone shared-journal round trips are documented separately. After its initial accepted run, Kairos disappeared from Gemini on the owner’s phone following a Gemini update; the owner has put further mobile troubleshooting and live renewal on hold. Current Gemini use is scoped to the computer browser. The compiled native Connect sheet still offers the original three providers; no native Gemini setup row has shipped. Independent onboarding, physical fault cases and customer recovery/retention remain open. This is an invited-owner beta, not a public App Store release. [ACCEPTANCE.md](ACCEPTANCE.md) preserves chronology and evidence.
 
 ### Whole-journal search — build 5 accepted by the owner, October 13
@@ -76,7 +78,7 @@ Open `Kairos.xcodeproj` in Xcode for the Simulator. Use only the disposable acco
 
 `com.steffanhaskins.kairos` was registered through Xcode automatic provisioning and used for the signed physical-device build, App Store distribution export and successful upload to the Kairos-Bridge app record. Put your local `DEVELOPMENT_TEAM` and any alternate `PRODUCT_BUNDLE_IDENTIFIER` in the ignored `Config/Signing.local.xcconfig` so project regeneration preserves them. No team is configured in the public source. Customer account deletion and store privacy disclosures remain ahead.
 
-The included original beta icon is an opaque 1024-pixel PNG compiled through `Assets.xcassets`. Regenerate its artwork with `swift scripts/generate_icon.swift` on macOS. The project generator includes the catalog and the signing configuration; normal users do not run these developer scripts.
+The owner-selected black-and-gold bridge icon is an opaque 1024-pixel PNG compiled through `Assets.xcassets`. Its original artwork is preserved in `Design/AppIcon-master.png`; `swift scripts/generate_icon.swift` packages that master for iOS without redrawing it. [Icon provenance](Design/APP_ICON.md). The project generator includes the catalog and the signing configuration; normal users do not run these developer scripts.
 
 ## Acceptance still required
 

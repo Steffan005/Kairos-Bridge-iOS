@@ -263,3 +263,10 @@ Compiled/accepted build 5 source stays `349d4f1f42c8d79ce985b14e9ccca71d3be587ae
 ### Subsequent owner direction: Gemini mobile on hold
 
 The owner supplied native Connected Apps screenshots with no visible Kairos/custom section and chose to defer further phone troubleshooting and live renewal. A fresh Mac Chrome web settings page independently showed Kairos-Bridge enabled, last sync October 13 at 09:01 EDT; the owner reports working computer-browser access. Treat Gemini as a computer web path in the current pilot, preserving the earlier phone result as dated evidence. There is no new successful renewal trace, phone-only setup or native Gemini setup row. The pending phone screenshot/Safari requests are superseded by the hold. Build 5 and the four existing approvals are unchanged.
+
+
+## October 14 — selected icon and build 6 preparation
+
+The owner reviewed the original gold Greek bridge and two new alternatives, then explicitly selected the original. The 1254-pixel master is preserved in Design/AppIcon-master.png with SHA-256 48fe5ed4295685d0723d8a1676d016be136b35bff66f7f8a9e5ded696059b38f. The updated packaging script converts the selected source to an opaque 1024-pixel sRGB app icon without redrawing or cropping it; the prepared image was visually inspected. The project and generator now specify 0.1.0 (6).
+
+This change updates artwork, packaging and release metadata. It does not alter Swift journal/search/access behavior. Archive, compiled icon inspection, upload, processing, group assignment and physical owner confirmation remain pending at this checkpoint. Build 5 remains the accepted phone evidence.
