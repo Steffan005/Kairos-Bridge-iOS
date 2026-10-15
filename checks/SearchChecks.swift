@@ -6,11 +6,16 @@ import Foundation
 @MainActor
 private final class SearchFixture: KairosServing {
     var email: String? = "search@example.test"
+    var userID: String? = "search-user"
     var calls = 0
     var response: ((JournalQuery, String?) async throws -> JournalSearchPage)!
     func restoreSession() throws -> Bool { true }
     func forgetSession() throws { email = nil }
     func signIn(email: String, password: String) async throws { self.email = email }
+    func account() async throws -> AccountStatus {
+        .init(id: "search-user", email: "search@example.test", emailVerified: false,
+              recoveryAvailable: false, emailChangeAvailable: false)
+    }
     func journal() async throws -> JournalEnvelope { .init(deleted: false, entries: [], connections: [], count: 61) }
     func search(_ query: JournalQuery, cursor: String?) async throws -> JournalSearchPage { calls += 1; return try await response(query, cursor) }
     func saveNote(text: String, project: String) async throws { fatalError("Search attempted a mutation") }

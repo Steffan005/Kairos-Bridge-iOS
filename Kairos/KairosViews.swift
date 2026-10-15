@@ -83,13 +83,14 @@ struct SignInView: View {
                             if await model.signIn(email: email.trimmingCharacters(in: .whitespacesAndNewlines), password: password) { password = "" }
                         }
                     }.disabled(model.busy || email.isEmpty || password.isEmpty)
+                    Link("Forgot password?", destination: KairosAPI.passwordRecoveryURL)
                 }
                 if model.busy { ProgressView("Signing in…") }
                 if let message = model.message { Section { Text(message).accessibilityIdentifier("service-message") } }
                 Section {
-                    Text("This build uses invited test accounts. Customer signup and account recovery aren't ready. This app doesn't save your password or add it to journal notes.")
+                    Text("This is an invited preview. Password recovery uses your verified email when enabled on the account page. This app doesn't save your password or add it to journal notes.")
                         .font(.footnote).foregroundStyle(.secondary)
-                    Link("Open Kairos account page", destination: KairosAPI.origin.appendingPathComponent("sign-in"))
+                    Link("Open Kairos account page", destination: KairosAPI.accountURL)
                     Text("Browser sign-in and app sign-in are separate. Use the same Kairos account when your AI asks you to approve access.").font(.footnote)
                 }
             }.listRowBackground(KairosStyle.surface)
@@ -181,7 +182,7 @@ struct JournalView: View {
                         if browser.hasMore {
                             Button {
                                 searching = false
-                                Task { await browser.showMore(owner: model.email, api: model.api, onExpired: model.searchSessionExpired) }
+                                Task { await browser.showMore(owner: model.userID, api: model.api, onExpired: model.searchSessionExpired) }
                             } label: {
                                 Label("Show more", systemImage: "chevron.down").frame(maxWidth: .infinity, minHeight: 44)
                             }
@@ -217,14 +218,14 @@ struct JournalView: View {
         }
         .refreshable { await model.refresh() }
         .sheet(isPresented: $composing) { ComposeView() }
-        .onChange(of: query) { _, value in browser.prepare(value, owner: model.email) }
+        .onChange(of: query) { _, value in browser.prepare(value, owner: model.userID) }
         .onChange(of: model.lastFetched) { _, _ in refresh += 1 }
         .onChange(of: model.journal?.deleted) { _, deleted in
             if deleted == true { browser.reset(); searchText = ""; selectedProject = ""; selectedAuthor = "" }
         }
         .onDisappear { browser.cancel() }
-        .task(id: JournalRequest(query: query, owner: model.email, refresh: refresh, deleted: model.journal?.deleted == true)) {
-            let requested = query; let owner = model.email
+        .task(id: JournalRequest(query: query, owner: model.userID, refresh: refresh, deleted: model.journal?.deleted == true)) {
+            let requested = query; let owner = model.userID
             guard model.signedIn, model.journal?.deleted != true else { browser.reset(); return }
             if requested.isSearch {
                 do { try await Task.sleep(nanoseconds: 250_000_000) } catch { return }
@@ -292,7 +293,7 @@ struct JournalView: View {
     }
     private var rememberAction: some View {
         Button("Remember") { searching = false; composing = true }
-            .buttonStyle(KairosActionStyle(primary: true)).disabled(model.busy || model.journal?.deleted == true)
+            .buttonStyle(KairosActionStyle(primary: true)).disabled(model.busy || model.userID.isEmpty || model.journal?.deleted == true)
             .accessibilityIdentifier("remember-action")
     }
     private var connectAction: some View {
@@ -459,6 +460,17 @@ struct ControlsView: View {
                 if let message = model.message { Section { Text(message) } }
                 Section("Your account") {
                     if !model.email.isEmpty { Text(model.email).font(.subheadline).textSelection(.enabled) }
+                    Link("Manage email and password", destination: KairosAPI.accountURL)
+                    if let account = model.account {
+                        Text(account.emailVerified ? "Email verified" : "Email not yet verified")
+                            .font(.footnote).foregroundStyle(.secondary)
+                        if !account.recoveryAvailable {
+                            Text("Password recovery is not enabled for this account yet. Open the account page for availability.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
+                    }
+                    Text("Account changes open in your browser, which has a separate sign-in. Use the same Kairos account. Your email refreshes when you return to the app.")
+                        .font(.footnote).foregroundStyle(.secondary)
                     Text("Your private journal, shared with the AI connections you approve.")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
@@ -475,7 +487,7 @@ struct ControlsView: View {
                 }
                 Section("Remove active notes") {
                     Button("Delete journal", role: .destructive) { deleting = true }.disabled(model.busy || model.journal?.deleted == true)
-                    Text("Deletion removes active notes and disconnects every AI. It cannot be undone here. The sign-in account remains. Host disk snapshots may retain deleted data; customer recovery and backup removal aren't ready.").font(.footnote).foregroundStyle(.secondary)
+                    Text("Deletion removes active notes and disconnects every AI. It cannot be undone here. The sign-in account remains. Host disk snapshots may retain deleted data; self-service journal recovery and backup removal aren't ready.").font(.footnote).foregroundStyle(.secondary)
                 }
             }.listRowBackground(KairosStyle.surface)
         }.navigationTitle("Your choice")

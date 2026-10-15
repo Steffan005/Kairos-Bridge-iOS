@@ -22,6 +22,9 @@ struct SessionVault: SessionStoring {
     struct Session: Codable, Equatable {
         var email: String?
         var cookies: [Cookie]
+        // Older builds stored only email and cookies. A missing ID is backfilled
+        // from the authenticated server session, never inferred from that email.
+        var userID: String? = nil
     }
 
     private let service = "com.steffanhaskins.kairos.staging-session"

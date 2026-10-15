@@ -23,11 +23,39 @@ private final class FixtureVault: SessionStoring {
 }
 
 private final class FixtureHTTP: URLProtocol {
+    private static let responseLock = NSLock()
+    private static var pausedPath: String?
+    private static var pausedReply: (() -> Void)?
+    static func pause(_ path: String) {
+        responseLock.lock(); defer { responseLock.unlock() }
+        pausedPath = path
+    }
+    static var waiting: Bool {
+        responseLock.lock(); defer { responseLock.unlock() }
+        return pausedReply != nil
+    }
+    static func release() {
+        responseLock.lock()
+        let reply = pausedReply; pausedReply = nil; pausedPath = nil
+        responseLock.unlock(); reply?()
+    }
+    static func waitUntilPaused() async {
+        for _ in 0..<10_000 {
+            if waiting { return }
+            await Task.yield()
+        }
+        fatalError("Synthetic HTTP request did not reach suspension")
+    }
     static var mutations = 0
     static var rotateCookie = true
     static var approved = true
     static var saveStatus = 201
     static var dropSaveResponse = false
+    static var accountID = "fixture-user"
+    static var accountEmail = "fixture@example.test"
+    static var accountStatus = 200
+    static var sessionMissing = false
+    static var sessionReads = 0
     override class func canInit(with request: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
     override func startLoading() {
@@ -44,7 +72,15 @@ private final class FixtureHTTP: URLProtocol {
             }
             body = "{\"id\":\"synthetic-ack\",\"text\":\"Synthetic response check\"}"
         case "/api/auth/sign-in/email":
-            body = "{\"user\":{\"email\":\"fixture@example.test\"}}"
+            body = "{\"user\":{\"id\":\"\(Self.accountID)\",\"email\":\"\(Self.accountEmail)\"}}"
+        case "/api/account":
+            status = Self.accountStatus
+            body = status == 200
+                ? "{\"id\":\"\(Self.accountID)\",\"email\":\"\(Self.accountEmail)\",\"emailVerified\":true,\"recoveryAvailable\":true,\"emailChangeAvailable\":true}"
+                : "{\"error\":\"Account controls unavailable\"}"
+        case "/api/auth/get-session":
+            Self.sessionReads += 1
+            body = Self.sessionMissing ? "null" : "{\"user\":{\"id\":\"\(Self.accountID)\",\"email\":\"\(Self.accountEmail)\",\"emailVerified\":true}}"
         case "/api/auth/sign-out":
             body = "{\"success\":true}"
         case "/api/journal/disconnect":
@@ -61,9 +97,16 @@ private final class FixtureHTTP: URLProtocol {
             headers["Set-Cookie"] = "fixture_session=rotated-synthetic; Path=/; Secure; HttpOnly"
         }
         let response = HTTPURLResponse(url: url, statusCode: status, httpVersion: "HTTP/1.1", headerFields: headers)!
-        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-        client?.urlProtocol(self, didLoad: Data(body.utf8))
-        client?.urlProtocolDidFinishLoading(self)
+        let reply = {
+            self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+            self.client?.urlProtocol(self, didLoad: Data(body.utf8))
+            self.client?.urlProtocolDidFinishLoading(self)
+        }
+        Self.responseLock.lock()
+        if Self.pausedPath == url.path {
+            Self.pausedReply = reply; Self.responseLock.unlock(); return
+        }
+        Self.responseLock.unlock(); reply()
     }
     override func stopLoading() { }
 }
@@ -152,6 +195,94 @@ struct APIResponseChecks {
                    "Read certified the earlier unknown commit or repeated its mutation")
         }
 
+        let legacyData = Data("{\"email\":\"old@example.test\",\"cookies\":[]}".utf8)
+        let legacySession = try JSONDecoder().decode(SessionVault.Session.self, from: legacyData)
+        expect(legacySession.userID == nil && legacySession.email == "old@example.test",
+               "Older Keychain session format no longer decodes safely")
+
+        FixtureHTTP.rotateCookie = false
+        let identityVault = FixtureVault(); identityVault.failSave = false
+        let identityAPI = KairosAPI(vault: identityVault, transport: transport)
+        _ = try identityAPI.restoreSession()
+        expect(identityAPI.userID == nil, "Legacy email was guessed into an account ID")
+        let account = try await identityAPI.account()
+        expect(account.id == "fixture-user" && identityVault.session?.userID == "fixture-user",
+               "Authenticated account ID was not backfilled into secure storage")
+        FixtureHTTP.accountEmail = "verified@example.com"
+        _ = try await identityAPI.account()
+        expect(identityAPI.email == "verified@example.com" && identityVault.session?.email == "verified@example.com",
+               "Authoritative email change did not refresh both memory and secure storage")
+        expect(identityAPI.userID == "fixture-user", "Email change replaced the immutable user ID")
+        FixtureHTTP.accountID = "replacement-user"
+        var identityRejected = false
+        do { _ = try await identityAPI.account() }
+        catch let error as KairosFailure { identityRejected = error.signInRequired }
+        expect(identityRejected && identityAPI.userID == "fixture-user",
+               "Unexpected account ID was accepted into an existing saved session")
+
+        FixtureHTTP.accountID = "fixture-user"; FixtureHTTP.accountStatus = 404
+        let fallbackVault = FixtureVault(); fallbackVault.failSave = false
+        let fallbackAPI = KairosAPI(vault: fallbackVault, transport: transport)
+        _ = try fallbackAPI.restoreSession()
+        let fallback = try await fallbackAPI.account()
+        expect(fallback.id == "fixture-user" && fallback.email == "verified@example.com"
+               && !fallback.emailChangeAvailable && !fallback.recoveryAvailable,
+               "Older service fallback did not establish identity with unavailable account controls")
+        expect(fallbackVault.session?.userID == "fixture-user",
+               "Older service's authoritative ID was not persisted")
+        FixtureHTTP.sessionMissing = true
+        var missingSessionRejected = false
+        do { _ = try await fallbackAPI.account() }
+        catch let error as KairosFailure { missingSessionRejected = error.signInRequired }
+        expect(missingSessionRejected, "Null legacy session response did not require sign-in")
+
+        FixtureHTTP.accountStatus = 503; FixtureHTTP.sessionMissing = false
+        let previousSessionReads = FixtureHTTP.sessionReads
+        do { _ = try await fallbackAPI.account(); fatalError("Account error was hidden") }
+        catch KairosFailure.service(503, _) { }
+        expect(FixtureHTTP.sessionReads == previousSessionReads,
+               "Account-service failure silently fell back to a different response contract")
+
+        FixtureHTTP.accountStatus = 200; FixtureHTTP.rotateCookie = true
+        FixtureHTTP.accountID = "alice-user"; FixtureHTTP.accountEmail = "alice@example.test"
+        let raceVault = FixtureVault(); raceVault.failSave = false
+        let raceAPI = KairosAPI(vault: raceVault, transport: transport)
+        _ = try raceAPI.restoreSession()
+        FixtureHTTP.pause("/api/account")
+        let expiredRead = Task { () -> Bool in
+            do { _ = try await raceAPI.account(); return false }
+            catch is CancellationError { return true }
+            catch { return false }
+        }
+        await FixtureHTTP.waitUntilPaused()
+        try raceAPI.forgetSession()
+        FixtureHTTP.release()
+        expect(await expiredRead.value && raceAPI.userID == nil && raceAPI.email == nil && raceVault.session == nil,
+               "Delayed account/cookie response resurrected an expired device session")
+
+        for oldStatus in [200, 401] {
+            FixtureHTTP.accountStatus = oldStatus
+            FixtureHTTP.accountID = "alice-user"; FixtureHTTP.accountEmail = "alice@example.test"
+            FixtureHTTP.pause("/api/account")
+            let replacedRead = Task { () -> Bool in
+                do { _ = try await raceAPI.account(); return false }
+                catch is CancellationError { return true }
+                catch { return false }
+            }
+            await FixtureHTTP.waitUntilPaused()
+            FixtureHTTP.accountID = "bob-user"; FixtureHTTP.accountEmail = "bob@example.test"
+            try await raceAPI.signIn(email: "bob@example.test", password: "synthetic fixture only")
+            let savedBob = raceVault.session
+            FixtureHTTP.release()
+            expect(await replacedRead.value && raceAPI.userID == "bob-user" && raceAPI.email == "bob@example.test"
+                   && raceVault.session == savedBob,
+                   "Old \(oldStatus) response modified the replacement owner's identity or secure session")
+        }
+
+        expect(KairosAPI.passwordRecoveryURL.scheme == "https" && KairosAPI.passwordRecoveryURL.path == "/forgot-password",
+               "Forgot-password link requires an authenticated account page")
+        expect(KairosAPI.accountURL.scheme == "https" && KairosAPI.accountURL.path == "/account",
+               "Account management did not use the HTTPS account page")
         print("\(passed) synthetic API-response checks passed; no live network or Keychain.")
     }
 }

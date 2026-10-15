@@ -132,8 +132,20 @@ struct JournalEnvelope: Decodable {
 }
 
 struct SignInReply: Decodable {
-    struct Owner: Decodable { let email: String }
+    struct Owner: Decodable {
+        let id: String
+        let email: String
+        let emailVerified: Bool?
+    }
     let user: Owner
+}
+
+struct AccountStatus: Decodable {
+    let id: String
+    let email: String
+    let emailVerified: Bool
+    let recoveryAvailable: Bool
+    let emailChangeAvailable: Bool
 }
 
 struct ServiceFailure: Decodable {

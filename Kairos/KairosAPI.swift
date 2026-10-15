@@ -15,10 +15,12 @@ private final class RefuseRedirects: NSObject, URLSessionTaskDelegate {
 @MainActor
 protocol KairosServing {
     var email: String? { get }
+    var userID: String? { get }
     var sessionStorageWarning: String? { get }
     func restoreSession() throws -> Bool
     func forgetSession() throws
     func signIn(email: String, password: String) async throws
+    func account() async throws -> AccountStatus
     func journal() async throws -> JournalEnvelope
     func search(_ query: JournalQuery, cursor: String?) async throws -> JournalSearchPage
     func saveNote(text: String, project: String) async throws
@@ -39,9 +41,12 @@ extension KairosServing {
 @MainActor
 final class KairosAPI: KairosServing {
     static let origin = URL(string: "https://kairos-journal-staging.onrender.com")!
+    static let accountURL = origin.appendingPathComponent("account")
+    static let passwordRecoveryURL = origin.appendingPathComponent("forgot-password")
     private let vault: any SessionStoring
     private let providedTransport: URLSession?
     private var saved = SessionVault.Session(email: nil, cookies: [])
+    private var sessionGeneration = 0
     private(set) var sessionStorageWarning: String?
     private let redirects = RefuseRedirects()
     private lazy var transport: URLSession = {
@@ -61,8 +66,11 @@ final class KairosAPI: KairosServing {
     }
 
     var email: String? { saved.email }
+    var userID: String? { saved.userID }
 
     func restoreSession() throws -> Bool {
+        sessionGeneration += 1
+        saved = .init(email: nil, cookies: [])
         saved = try vault.load() ?? .init(email: nil, cookies: [])
         sessionStorageWarning = nil
         saved.cookies.removeAll { $0.expires.map { $0 <= Date() } ?? false }
@@ -70,18 +78,56 @@ final class KairosAPI: KairosServing {
     }
 
     func forgetSession() throws {
-        try vault.clear()
+        sessionGeneration += 1
         saved = .init(email: nil, cookies: [])
         sessionStorageWarning = nil
+        try vault.clear()
     }
 
     func signIn(email: String, password: String) async throws {
+        try forgetSession()
+        let generation = sessionGeneration
         let data = try await request("/api/auth/sign-in/email", method: "POST", body: ["email": email, "password": password])
+        guard generation == sessionGeneration else { throw CancellationError() }
         let reply = try JSONDecoder().decode(SignInReply.self, from: data)
-        guard !saved.cookies.isEmpty else { throw KairosFailure.invalidResponse }
+        guard !saved.cookies.isEmpty, !reply.user.id.isEmpty, !reply.user.email.isEmpty else { throw KairosFailure.invalidResponse }
         saved.email = reply.user.email
+        saved.userID = reply.user.id
         try vault.save(saved)
         sessionStorageWarning = nil
+    }
+
+    func account() async throws -> AccountStatus {
+        let generation = sessionGeneration
+        let current: AccountStatus
+        do {
+            current = try JSONDecoder().decode(AccountStatus.self, from: await request("/api/account"))
+        } catch KairosFailure.service(404, _) {
+            guard generation == sessionGeneration else { throw CancellationError() }
+            // Older invited servers already expose the authenticated user ID.
+            // Recover identity safely while leaving newer account controls unavailable.
+            let data = try await request("/api/auth/get-session")
+            guard let reply = try JSONDecoder().decode(SignInReply?.self, from: data) else {
+                throw KairosFailure.service(401, "Please sign in to Kairos")
+            }
+            current = AccountStatus(id: reply.user.id, email: reply.user.email,
+                                    emailVerified: reply.user.emailVerified ?? false,
+                                    recoveryAvailable: false, emailChangeAvailable: false)
+        }
+        guard generation == sessionGeneration else { throw CancellationError() }
+        guard !current.id.isEmpty, !current.email.isEmpty else { throw KairosFailure.invalidResponse }
+        if let expectedID = saved.userID, expectedID != current.id {
+            throw KairosFailure.service(401, "Your account changed. Please sign in again.")
+        }
+        let changed = saved.userID != current.id || saved.email != current.email
+        saved.userID = current.id; saved.email = current.email
+        if changed {
+            do { try vault.save(saved); sessionStorageWarning = nil }
+            catch {
+                sessionStorageWarning = "This device couldn't save updated sign-in details. You may need to sign in again when you reopen Kairos."
+            }
+        }
+        return current
     }
 
     func journal() async throws -> JournalEnvelope {
@@ -127,6 +173,7 @@ final class KairosAPI: KairosServing {
     }
 
     private func request(_ path: String, method: String = "GET", body: [String: Any]? = nil) async throws -> Data {
+        let generation = sessionGeneration
         guard path.hasPrefix("/api/"), let url = URL(string: path, relativeTo: Self.origin)?.absoluteURL,
               url.host == Self.origin.host, url.scheme == "https" else { throw KairosFailure.invalidResponse }
         var request = URLRequest(url: url)
@@ -145,6 +192,9 @@ final class KairosAPI: KairosServing {
         }
         // No automatic application retry: a timed-out mutation may already have committed.
         let (data, response) = try await transport.data(for: request)
+        // A response issued under an expired login must not restore cookies,
+        // persist account details, or affect a later owner's request.
+        guard generation == sessionGeneration else { throw CancellationError() }
         guard let response = response as? HTTPURLResponse else { throw KairosFailure.invalidResponse }
         if (200..<300).contains(response.statusCode) {
             let previousSession = saved
