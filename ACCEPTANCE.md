@@ -1,8 +1,20 @@
-# Native Kairos acceptance — October 11–12, 2026
+# Native Kairos acceptance — October 11–15, 2026
 
 Actor: ChatGPT / gpt_codex. Scope: Kairos native iPhone client.
 
-## Current checkpoint — October12 afternoon ET
+## October 15 — owner accepts build 7
+
+The signed archive and export completed for **0.1.0 (7)**. Apple accepted the upload and showed the build as **Testing** in the invited owner group. The existing owner confirmed updating through TestFlight, opening the app with earlier journal notes visible, seeing the verified email address, and navigating to the account page. The beta used the configured account service.
+
+A disposable real-mail trial verified the changed address on the same account and confirmed its note was preserved. After reset, the prior session and password were rejected and the replacement password worked. The fixture had no AI approvals.
+
+A separate comparison across both changes on the invited owner account found the same account ID, all previous journal records preserved, verified journal chains and unchanged AI approval records. The prior sign-in session was absent. One actual approved ChatGPT connection read and wrote to the same journal without reauthorization. This comparison covered the two changes as one interval. It establishes data and approval preservation and continued access for the ChatGPT path that was exercised. Usability of each other provider connection remains unverified for this checkpoint.
+
+Sources at the time of the checks were [native `2011e331`](https://github.com/Steffan005/Kairos-Bridge-iOS/commit/2011e3312feaa6ed6cb70b13ef2e48d27a701117) and [account service `5c7729c4`](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/commit/5c7729c46308d658a50d8f5dd19f19a3adb1f082). [Account recovery controls and fixture checks](ACCOUNT_RECOVERY.md).
+
+Independent onboarding, native use with a self-hosted service, public App Store release, and maximum-text and VoiceOver inspection of the new account controls remain open. Gemini mobile remains on hold. The owner’s account details and supporting receipts are kept private.
+
+## October 12 checkpoint — build 3
 
 Apple processed0.1.0 build3 from `ac41d8eb8ae68e0ec7a238b4be41eaf29e50da6a`; ChatGPT assigned it to the existing Kairos Owner Pilot group and directly observed Testing. The owner followed the requested Update/Open/Show more check and reported existing notes visible and working controls. His screenshot shows the new layout and a fresh journal checkpoint, but most surfaces remained gray in dark mode. Palette acceptance was reopened. A separately read Apple tester metric still listedbuild2 at that moment; it is not independent build3 installation proof.
 
@@ -38,7 +50,7 @@ One disposable account on the existing invited HTTPS service was used. No person
 
 The first sign-out attempt exposed a real navigation bug: the owner session ended but a pushed control screen remained visible. Resetting the navigation stack at the sign-in boundary corrected it; the rebuilt app passed the same sign-out path.
 
-## Remaining acceptance
+## Open checks at the initial Simulator and device checkpoints
 
 - Independent repetition of the passed TestFlight native/Claude read-write and refresh/reopen path. Owner session recovery/retrieval after full close/reopen is operator-confirmed.
 - A clean provider setup and independent tester for the guided connection path. Prior hosted Claude iPhone tests are separate evidence.
