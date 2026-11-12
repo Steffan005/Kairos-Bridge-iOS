@@ -4,7 +4,7 @@
 
 Your journal, across your AI apps. Save a note, find what matters, and manage the AI connections you approve from one iPhone app.
 
-Kairos for iPhone is the native SwiftUI companion to the [Kairos Journal service](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/tree/chatgpt/private-journal-service/hosted). The service gives approved AI apps a shared place to read notes and, with write permission, save them; this app puts that journal and its owner controls on your phone.
+Kairos for iPhone is the native SwiftUI companion to the [Kairos Journal service](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/tree/main/hosted). The service gives approved AI apps a shared place to read notes and, with write permission, save them; this app puts that journal and its owner controls on your phone.
 
 Created by **Steffan Douglas Haskins**.
 
@@ -16,7 +16,7 @@ Created by **Steffan Douglas Haskins**.
 - **Connect:** review approved Claude, ChatGPT and Grok connections and open their setup pages. Approval and enabling Kairos in a particular AI chat are separate steps.
 - **Keep control:** export your journal, sign out of the app, disconnect all AI access while keeping notes, or delete the active journal with confirmation.
 
-The Journal engine can run locally with records on an owner-operated computer. The native pilot uses the invited account service. Using the iPhone app with a self-hosted service remains unverified. Approved AI providers receive the notes they retrieve and handle them under their own policies. Signing out of the iPhone app preserves separately approved AI access; **Disconnect all AI access** stops it. Active-journal deletion leaves the sign-in account in place, and hosting snapshots or protected recovery copies may retain deleted data. See the [service's storage and owner-control details](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/blob/chatgpt/private-journal-service/hosted/README.md).
+The Journal engine can run locally with records on an owner-operated computer. The native pilot uses the invited account service. Using the iPhone app with a self-hosted service remains unverified. Approved AI providers receive the notes they retrieve and handle them under their own policies. Signing out of the iPhone app preserves separately approved AI access; **Disconnect all AI access** stops it. Active-journal deletion leaves the sign-in account in place, and hosting snapshots or protected recovery copies may retain deleted data. See the [service's storage and owner-control details](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/blob/main/hosted/README.md).
 
 ## Availability
 
@@ -45,13 +45,13 @@ These are recorded results on an invited owner account, with support limited to 
 
 ## For developers
 
-The [Journal repository](https://github.com/Steffan005/Kairos-Bridge-AI-Journal) owns the memory engine and AI connection service. The [hosted adapter source](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/tree/chatgpt/private-journal-service/hosted) is on its public `chatgpt/private-journal-service` branch. A local desktop Journal and this hosted service are separate deployment options; the native client uses the hosted service. The existing App repository remains a separate web/account surface.
+The [Journal repository](https://github.com/Steffan005/Kairos-Bridge-AI-Journal) owns the memory engine and AI connection service. The [hosted adapter source](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/tree/main/hosted) is on its public default branch, `main`. A local desktop Journal and this hosted service are separate deployment options; the native client uses the hosted service. The existing App repository remains a separate web/account surface.
 
 Useful service references:
 
-- [Hosted setup and owner controls](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/blob/chatgpt/private-journal-service/hosted/README.md).
-- [Whole-journal search contract](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/blob/chatgpt/private-journal-service/hosted/OWNER_SEARCH.md).
-- [Project briefings and addressed handoffs](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/blob/chatgpt/private-journal-service/hosted/CONTINUE.md). A native briefing screen is separate work; the iPhone app currently browses notes.
+- [Hosted setup and owner controls](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/blob/main/hosted/README.md).
+- [Whole-journal search contract](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/blob/main/hosted/OWNER_SEARCH.md).
+- [Project briefings and addressed handoffs](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/blob/main/hosted/CONTINUE.md). A native briefing screen is separate work; the iPhone app currently browses notes.
 
 ### Build
 
@@ -86,7 +86,7 @@ The owner-selected black-and-gold bridge icon is an opaque 1024-pixel PNG compil
 ## Evidence and development history
 
 - [ACCEPTANCE.md](ACCEPTANCE.md): dated native, provider, distribution and owner-control results, including open acceptance work.
-- [BUILD_HISTORY.md](BUILD_HISTORY.md): the previous README preserved unchanged, including exact source revisions, build receipts, repairs, search details and preliminary check commands. Its older “current” statements describe their original checkpoints; use the dated acceptance records and availability table above to identify the latest documented status.
+- [BUILD_HISTORY.md](BUILD_HISTORY.md): the earlier development notes, including exact source revisions, build receipts, repairs, search details and preliminary check commands. Its older “current” statements describe their original checkpoints; use the dated acceptance records and availability table above to identify the latest documented status.
 - [ACCOUNT_RECOVERY.md](ACCOUNT_RECOVERY.md): the account controls introduced in build 7 and the scope of the recovery checks.
 - [Reviewed Anamnesis design handoff](DESIGN_HANDOFF_2026-10-12.md) and [icon provenance](Design/APP_ICON.md).
 
