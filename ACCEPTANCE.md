@@ -304,3 +304,33 @@ The full screenshot and accessibility state are preserved privately under KAIROS
 In reply to the requested TestFlight 0.1.0 (6) Update, Home Screen icon and journal-open check, Steffan reported: “new icon, notes intact, update succeeded.” The supplied 12:19 PM iPhone Home Screen screenshot directly shows the selected original gold Greek bridge on black. The screenshot contains no build number or journal records; version update/open and retained notes are operator-reported. This closes the scoped owner icon/update check and makes build 6 the accepted owner beta.
 
 The source remains c8ece3aff65d79a6644d401ab1db5364fa957100. This acceptance documentation changes no executable and requests no further phone action. The screenshot and receipt remain private outside Git. A genuine checkpoint was saved/retrieved in hosted Kairos and mirrored through a fresh local MCP process. Existing holds on Gemini mobile/renewal and independent onboarding remain; image attachments are future work. This result does not establish new failure-mode, provider or public App Store acceptance.
+
+
+## November 21 — build 8 signed, uploaded and submitted for external review
+
+Executable source `30a26570ce724b7177c4b086a794580a667fc56c` produced **0.1.0 (8)**,
+with invited-signup, beta privacy and clearly named account-deletion links.
+The fresh Simulator and separate hosted disposable-account checks are recorded
+in [FRIEND_BETA_PREFLIGHT.md](FRIEND_BETA_PREFLIGHT.md). Distribution signing and
+strict App Store export/profile checks passed, and Xcode acknowledged successful
+upload at **2026-11-21T21:09:03.054Z**. Apple processing completed and the existing
+owner group showed build 8 Testing; earlier builds and the owner tester were
+retained.
+
+In reply to the explicit build-8 update/open/control check, Steffan reported:
+“Build 8 updated; notes and links look right.” The requested checks were that
+existing notes remained visible and Your journal contained Delete my account
+and Beta privacy notice. This is the owner's bounded physical acceptance,
+without a separate phone screenshot or per-action trace. It does not establish
+physical ambiguous-save/session-failure cases or independent friend/provider
+onboarding.
+
+App Store Connect accepted the beta description, feedback/privacy details,
+review contact, dedicated reviewer login and review notes. The reviewer account
+contains only fictional notes and has no access to other journals. Build 8 was
+submitted for external Beta App Review in Kairos Friends Pilot; the observed
+state is **Waiting for Review**, zero external testers, no public link and
+automatic tester notifications off. No friend invitation was sent. Apple
+external approval remains a release gate; internal Testing and successful
+processing are separate states. This dated documentation update creates no
+new executable or access grant.
