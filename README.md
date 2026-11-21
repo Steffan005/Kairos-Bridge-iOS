@@ -14,22 +14,22 @@ Created by **Steffan Douglas Haskins**.
 - **Find:** search the whole journal by Words, Exact phrase or Note ID, filter by recorded author or project, and load older matching notes with Show more.
 - **Read:** see saved text with its date, recorded author and project labels. The journal view is named **Anamnesis — Your journal**.
 - **Connect:** review approved Claude, ChatGPT and Grok connections and open their setup pages. Approval and enabling Kairos in a particular AI chat are separate steps.
-- **Keep control:** export your journal, sign out of the app, disconnect all AI access while keeping notes, or delete the active journal with confirmation.
+- **Keep control:** export your journal, sign out of the app, disconnect all AI access while keeping notes, delete the active journal with confirmation, or open the password-confirmed active-account deletion page.
 
-The Journal engine can run locally with records on an owner-operated computer. The native pilot uses the invited account service. Using the iPhone app with a self-hosted service remains unverified. Approved AI providers receive the notes they retrieve and handle them under their own policies. Signing out of the iPhone app preserves separately approved AI access; **Disconnect all AI access** stops it. Active-journal deletion leaves the sign-in account in place, and hosting snapshots or protected recovery copies may retain deleted data. See the [service's storage and owner-control details](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/blob/chatgpt/private-journal-service/hosted/README.md).
+The Journal engine can run locally with records on an owner-operated computer. The native pilot uses the invited account service. Using the iPhone app with a self-hosted service remains unverified. Approved AI providers receive the notes they retrieve and handle them under their own policies. Signing out of the iPhone app preserves separately approved AI access; **Disconnect all AI access** stops it. Active-journal deletion leaves the sign-in account in place. The separate Delete my account control removes the active account and journal; hosting snapshots or protected recovery copies may retain earlier data. See the [service's storage and owner-control details](https://github.com/Steffan005/Kairos-Bridge-AI-Journal/blob/chatgpt/private-journal-service/hosted/README.md).
 
 ## Availability
 
-See the [October 15 acceptance record](ACCEPTANCE.md#october-15--owner-accepts-build-7) for the latest documented beta result.
+See the [November 21 acceptance record](ACCEPTANCE.md) for build 8, its scoped physical owner check and external-review status.
 
 | Component | Latest documented status |
 | --- | --- |
-| Invited iPhone beta | **0.1.0 build 7**, accepted by the existing owner on October 15, 2026. The owner updated through TestFlight, reopened the journal with existing notes visible, and confirmed the verified email display and account page navigation. |
+| Invited iPhone beta | **0.1.0 build 8**, signed, uploaded and processed on November 21, 2026. The owner reported a successful TestFlight update, existing notes visible, and the new account-deletion/privacy links present; external Beta App Review was submitted and shows Waiting for Review at this checkpoint. |
 | Public distribution | This repository provides invited-beta development source. A public App Store release is not documented here. Existing pilot participants use their TestFlight invitation. |
 | Account recovery | An email-delivery trial passed on a disposable account. The owner’s account kept its prior notes and AI approvals through email change and password recovery. An approved ChatGPT connection read and wrote to the same journal without reconnection. [Account recovery details](ACCOUNT_RECOVERY.md). |
 | Broader acceptance | Independent customer onboarding, physical failure cases and customer recovery/retention work remain open. |
 
-The build-8 candidate adds visible invited-signup, privacy and account-deletion links. Its [November 21 Simulator preflight](FRIEND_BETA_PREFLIGHT.md) passed; distribution signing, physical TestFlight and external approval remain open.
+Build 8 adds visible invited-signup, privacy and account-deletion links. Its [November 21 preflight and distribution record](FRIEND_BETA_PREFLIGHT.md) distinguishes direct Simulator/server checks from the owner-reported physical result; external approval and independent friend acceptance remain open.
 
 The current source can contain changes newer than the accepted beta. A source commit, successful compilation and an installed TestFlight build are distinct records.
 
