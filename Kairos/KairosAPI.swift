@@ -41,6 +41,9 @@ extension KairosServing {
 @MainActor
 final class KairosAPI: KairosServing {
     static let origin = URL(string: "https://kairos-journal-staging.onrender.com")!
+    static let signupURL = origin.appendingPathComponent("join")
+    static let privacyURL = origin.appendingPathComponent("privacy")
+    static let accountDeletionURL = URL(string: origin.appendingPathComponent("account").absoluteString + "#delete-account")!
     static let accountURL = origin.appendingPathComponent("account")
     static let passwordRecoveryURL = origin.appendingPathComponent("forgot-password")
     private let vault: any SessionStoring
