@@ -90,7 +90,9 @@ struct SignInView: View {
                 Section {
                     Text("This is an invited preview. Password recovery uses your verified email when enabled on the account page. This app doesn't save your password or add it to journal notes.")
                         .font(.footnote).foregroundStyle(.secondary)
+                    Link("Create your invited account", destination: KairosAPI.signupURL)
                     Link("Open Kairos account page", destination: KairosAPI.accountURL)
+                    Link("Beta privacy notice", destination: KairosAPI.privacyURL)
                     Text("Browser sign-in and app sign-in are separate. Use the same Kairos account when your AI asks you to approve access.").font(.footnote)
                 }
             }.listRowBackground(KairosStyle.surface)
@@ -461,6 +463,8 @@ struct ControlsView: View {
                 Section("Your account") {
                     if !model.email.isEmpty { Text(model.email).font(.subheadline).textSelection(.enabled) }
                     Link("Manage email and password", destination: KairosAPI.accountURL)
+                    Link("Delete my account", destination: KairosAPI.accountDeletionURL)
+                    Link("Beta privacy notice", destination: KairosAPI.privacyURL)
                     if let account = model.account {
                         Text(account.emailVerified ? "Email verified" : "Email not yet verified")
                             .font(.footnote).foregroundStyle(.secondary)

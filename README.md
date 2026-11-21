@@ -29,6 +29,8 @@ See the [October 15 acceptance record](ACCEPTANCE.md#october-15--owner-accepts-b
 | Account recovery | An email-delivery trial passed on a disposable account. The owner’s account kept its prior notes and AI approvals through email change and password recovery. An approved ChatGPT connection read and wrote to the same journal without reconnection. [Account recovery details](ACCOUNT_RECOVERY.md). |
 | Broader acceptance | Independent customer onboarding, physical failure cases and customer recovery/retention work remain open. |
 
+The build-8 candidate adds visible invited-signup, privacy and account-deletion links. Its [November 21 Simulator preflight](FRIEND_BETA_PREFLIGHT.md) passed; distribution signing, physical TestFlight and external approval remain open.
+
 The current source can contain changes newer than the accepted beta. A source commit, successful compilation and an installed TestFlight build are distinct records.
 
 ## Shared-journal evidence
